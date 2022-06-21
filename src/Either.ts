@@ -1,25 +1,25 @@
-interface Side {
-  isLeft(): boolean;
-  isRight(): boolean;
-}
-
-class Left<T> implements Side {
-  constructor(public readonly value: T) {}
-
-  isLeft(): this is Left<T> {
-    return true;
+abstract class Side {
+  isLeft() {
+    return false;
   }
-
   isRight() {
     return false;
   }
 }
 
-class Right<T> implements Side {
-  constructor(public readonly value: T) {}
+class Left<T> extends Side {
+  constructor(public readonly value: T) {
+    super();
+  }
 
-  isLeft() {
-    return false;
+  isLeft(): this is Left<T> {
+    return true;
+  }
+}
+
+class Right<T> extends Side {
+  constructor(public readonly value: T) {
+    super();
   }
 
   isRight(): this is Right<T> {
@@ -45,14 +45,14 @@ export class Either<L, R> {
   }
 
   mapLeft<L2 = never>(param: (a: L) => L2): Either<L2, R> {
-    return this.value.isRight()
-      ? Either.right(this.value.value)
-      : Either.left(param(this.value.value));
+    return this.value.isLeft()
+      ? Either.left(param(this.value.value))
+      : Either.right(this.value.value);
   }
 
   fold<Out>(onLeft: (a: L) => Out, onRight: (a: R) => Out) {
-    return this.value.isRight()
-      ? onRight(this.value.value)
-      : onLeft(this.value.value);
+    return this.value.isLeft()
+      ? onLeft(this.value.value)
+      : onRight(this.value.value);
   }
 }
