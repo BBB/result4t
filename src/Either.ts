@@ -55,4 +55,8 @@ export class Either<L, R> {
       ? onLeft(this.value.value)
       : onRight(this.value.value);
   }
+
+  flatten() {
+    return this.value.value;
+  }
 }
