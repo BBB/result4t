@@ -28,7 +28,7 @@ class Right<T> extends Side {
 }
 
 export class Either<L, R> {
-  constructor(private readonly value: Left<L> | Right<R>) {}
+  constructor(private readonly inner: Left<L> | Right<R>) {}
 
   static right<NewL, NewR>(r: NewR) {
     return new Either<NewL, NewR>(new Right(r));
@@ -39,24 +39,24 @@ export class Either<L, R> {
   }
 
   map<R2 = never>(param: (a: R) => R2): Either<L, R2> {
-    return this.value.isRight()
-      ? Either.right(param(this.value.value))
-      : Either.left(this.value.value);
+    return this.inner.isRight()
+      ? Either.right(param(this.inner.value))
+      : Either.left(this.inner.value);
   }
 
   mapLeft<L2 = never>(param: (a: L) => L2): Either<L2, R> {
-    return this.value.isLeft()
-      ? Either.left(param(this.value.value))
-      : Either.right(this.value.value);
+    return this.inner.isLeft()
+      ? Either.left(param(this.inner.value))
+      : Either.right(this.inner.value);
   }
 
   fold<Out>(onLeft: (a: L) => Out, onRight: (a: R) => Out) {
-    return this.value.isLeft()
-      ? onLeft(this.value.value)
-      : onRight(this.value.value);
+    return this.inner.isLeft()
+      ? onLeft(this.inner.value)
+      : onRight(this.inner.value);
   }
 
   flatten() {
-    return this.value.value;
+    return this.inner.value;
   }
 }

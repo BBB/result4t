@@ -7,7 +7,7 @@ const toString = <T extends { toString(): string }>(a: T) => a.toString();
 describe("right", () => {
   it("should contain a value", () => {
     const result = Either.right("right");
-    expect(result).toHaveProperty("value");
+    expect(result).toHaveProperty("inner");
     expect(result.flatten()).toEqual("right");
   });
 });
@@ -15,7 +15,7 @@ describe("right", () => {
 describe("left", () => {
   it("should contain a value", () => {
     const result = Either.left("left");
-    expect(result).toHaveProperty("value");
+    expect(result).toHaveProperty("inner");
     expect(result.flatten()).toEqual("left");
   });
 });
