@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { Either } from "../src/Either";
+import { Result } from "../src/Result";
 import { Task } from "../src/Task";
 
 describe("map", () => {
   it("should transform a right value", async () => {
-    const a = await new Task(() => Promise.resolve(Either.right(1)))
+    const a = await new Task(() => Promise.resolve(Result.success(1)))
       .map(() => "hello")
       .map(() => true)
       .run();
 
-    expect(a).toEqual(Either.right(true));
+    expect(a).toEqual(Result.success(true));
   });
 });
 
@@ -20,12 +20,12 @@ describe("mapLeft", () => {
     }
     const booError = new BooError();
     const a = await new Task(() =>
-      Promise.resolve(Either.left(new Error("Boo")))
+      Promise.resolve(Result.failure(new Error("Boo")))
     )
       .mapLeft(() => booError)
       .run();
 
-    expect(a).toEqual(Either.left(booError));
+    expect(a).toEqual(Result.failure(booError));
   });
 });
 
@@ -36,16 +36,16 @@ describe("PromiseLike", () => {
     }
     const booError = new BooError();
     const a = await new Task(() =>
-      Promise.resolve(Either.left(new Error("Boo")))
+      Promise.resolve(Result.failure(new Error("Boo")))
     ).mapLeft(() => booError);
 
-    expect(a).toEqual(Either.left(booError));
+    expect(a).toEqual(Result.failure(booError));
   });
 });
 describe("runThrowLeft", () => {
   it("should return the right side", async () => {
     await expect(
-      new Task(() => Promise.resolve(Either.right(true))).runThrowLeft()
+      new Task(() => Promise.resolve(Result.success(true))).runThrowLeft()
     ).resolves.toEqual(true);
   });
   it("should throw the left side", async () => {
@@ -54,7 +54,7 @@ describe("runThrowLeft", () => {
     }
     const booError = new BooError();
     await expect(
-      new Task(() => Promise.resolve(Either.left(booError))).runThrowLeft()
+      new Task(() => Promise.resolve(Result.failure(booError))).runThrowLeft()
     ).rejects.toEqual(booError);
   });
 });

@@ -1,16 +1,16 @@
-import { Either } from "./Either";
+import { Result } from "./Result";
 
-type TaskEither<L, R> = () => Promise<Either<L, R>>;
+type TaskResult<F, S> = () => Promise<Result<F, S>>;
 
-export class Task<L = never, R = never> implements PromiseLike<Either<L, R>> {
-  constructor(private inner: TaskEither<L, R>) {}
+export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
+  constructor(private inner: TaskResult<F, S>) {}
 
-  map<R2 = never>(param: (a: R) => R2): Task<L, R2> {
-    return new Task(() => this.inner().then((either) => either.map(param)));
+  map<R2 = never>(param: (a: S) => R2): Task<F, R2> {
+    return new Task(() => this.inner().then((result) => result.map(param)));
   }
 
-  mapLeft<L2 = never>(param: (a: L) => L2): Task<L2, R> {
-    return new Task(() => this.inner().then((either) => either.mapLeft(param)));
+  mapLeft<L2 = never>(param: (a: F) => L2): Task<L2, S> {
+    return new Task(() => this.inner().then((result) => result.mapLeft(param)));
   }
 
   run() {
@@ -24,16 +24,13 @@ export class Task<L = never, R = never> implements PromiseLike<Either<L, R>> {
     });
   }
 
-  then<TResult1 = Either<L, R>, TResult2 = never>(
+  then<Out1 = Result<F, S>, Out2 = never>(
     onfulfilled?:
-      | ((value: Either<L, R>) => PromiseLike<TResult1> | TResult1)
+      | ((value: Result<F, S>) => PromiseLike<Out1> | Out1)
       | undefined
       | null,
-    onrejected?:
-      | ((reason: any) => PromiseLike<TResult2> | TResult2)
-      | undefined
-      | null
-  ): PromiseLike<TResult1 | TResult2> {
+    onrejected?: ((reason: any) => PromiseLike<Out2> | Out2) | undefined | null
+  ): PromiseLike<Out1 | Out2> {
     return this.run().then(onfulfilled, onrejected);
   }
 }
