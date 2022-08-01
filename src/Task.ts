@@ -5,6 +5,14 @@ type TaskResult<F, S> = () => Promise<Result<F, S>>;
 export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
   constructor(private inner: TaskResult<F, S>) {}
 
+  static success<S>(result: S) {
+    return new Task(() => Promise.resolve(Result.success(result)));
+  }
+
+  static failure<F>(result: F) {
+    return new Task(() => Promise.resolve(Result.failure(result)));
+  }
+
   map<R2 = never>(param: (a: S) => R2): Task<F, R2> {
     return new Task(() => this.inner().then((result) => result.map(param)));
   }
