@@ -56,6 +56,10 @@ export class Either<L, R> {
       : onRight(this.inner.value);
   }
 
+  getOrElse<Out>(onLeft: (a: L) => Out) {
+    return this.inner.isLeft() ? onLeft(this.inner.value) : this.inner.value;
+  }
+
   flatten() {
     return this.inner.value;
   }

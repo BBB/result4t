@@ -58,3 +58,17 @@ describe("fold", () => {
     expect(result).toEqual("thgir");
   });
 });
+
+describe("getOrElse", () => {
+  it("should transform a value on the left", () => {
+    const error = new Error("Oops");
+    const result = Either.left<string, number>("left").getOrElse(() => error);
+    expect(result).toEqual(error);
+  });
+  it("should return a value on the right", () => {
+    const result = Either.right<number, string>("right").getOrElse(
+      () => new Error("Oops")
+    );
+    expect(result).toEqual("right");
+  });
+});
