@@ -34,7 +34,14 @@ describe("PromiseLike", () => {
 
     expect(a).toEqual(Result.failure(booError));
   });
+
+  it("should pass the inner to a then", async () => {
+    expect(
+      await Task.success(true).then((a) => a.getOrElse(() => "woo"))
+    ).toEqual(true);
+  });
 });
+
 describe("runThrowLeft", () => {
   it("should return the right side", async () => {
     await expect(Task.success(true).runThrowLeft()).resolves.toEqual(true);
