@@ -8,7 +8,7 @@ describe("right", () => {
   it("should contain a value", () => {
     const result = Result.success("right");
     expect(result).toHaveProperty("inner");
-    expect(result.flatten()).toEqual("right");
+    expect(result.get()).toEqual("right");
   });
 });
 
@@ -16,18 +16,18 @@ describe("left", () => {
   it("should contain a value", () => {
     const result = Result.failure("left");
     expect(result).toHaveProperty("inner");
-    expect(result.flatten()).toEqual("left");
+    expect(result.get()).toEqual("left");
   });
 });
 
 describe("map", () => {
   it("should transform a value on the right", () => {
     const result = Result.success("right").map(reverseString);
-    expect(result.flatten()).toEqual("thgir");
+    expect(result.get()).toEqual("thgir");
   });
   it("should not transform a value on the left", () => {
     const result = Result.failure<string, string>("left").map(reverseString);
-    expect(result.flatten()).toEqual("left");
+    expect(result.get()).toEqual("left");
   });
 });
 
@@ -36,13 +36,13 @@ describe("mapLeft", () => {
     const result = Result.failure<string, string>("left").mapLeft(
       reverseString
     );
-    expect(result.flatten()).toEqual("tfel");
+    expect(result.get()).toEqual("tfel");
   });
   it("should not transform a value on the right", () => {
     const result = Result.success<string, string>("right").mapLeft(
       reverseString
     );
-    expect(result.flatten()).toEqual("right");
+    expect(result.get()).toEqual("right");
   });
 });
 

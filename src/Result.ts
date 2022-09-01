@@ -60,7 +60,7 @@ export class Result<F, S> {
     return this.inner.isLeft() ? onLeft(this.inner.value) : this.inner.value;
   }
 
-  flatten() {
+  get() {
     return this.inner.value;
   }
 }
