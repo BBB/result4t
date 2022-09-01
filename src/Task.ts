@@ -17,6 +17,10 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     return new Task(() => this.inner().then((result) => result.map(param)));
   }
 
+  flatMap<S2>(param: (a: Task<F,S>) => Task<F, S2>) {
+    return param(this)
+  }
+
   mapLeft<L2 = never>(param: (a: F) => L2): Task<L2, S> {
     return new Task(() => this.inner().then((result) => result.mapLeft(param)));
   }

@@ -12,6 +12,17 @@ describe("map", () => {
   });
 });
 
+describe('flatMap', () => {
+  it("should chain Tasks", async () => {
+    const a = await Task.success(true).flatMap(() => Task.success(false)).run()
+    expect(a).toEqual(Result.success(false))
+  })
+  it("should chain a failure to a success", async () => {
+    const a = await Task.success(true).flatMap(() => Task.failure(false)).run()
+    expect(a).toEqual(Result.failure(false))
+  })
+})
+
 describe("mapLeft", () => {
   it("should transform a left value", async () => {
     class BooError extends Error {
