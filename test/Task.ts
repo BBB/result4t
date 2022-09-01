@@ -44,14 +44,14 @@ describe("PromiseLike", () => {
 
 describe("runThrowLeft", () => {
   it("should return the right side", async () => {
-    await expect(Task.success(true).runThrowLeft()).resolves.toEqual(true);
+    await expect(Task.success(true).runThrowFailure()).resolves.toEqual(true);
   });
   it("should throw the left side", async () => {
     class BooError extends Error {
       name = "BooError";
     }
     const booError = new BooError();
-    await expect(Task.failure(booError).runThrowLeft()).rejects.toEqual(
+    await expect(Task.failure(booError).runThrowFailure()).rejects.toEqual(
       booError
     );
   });

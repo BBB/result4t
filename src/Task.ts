@@ -25,7 +25,7 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     return this.inner();
   }
 
-  async runThrowLeft() {
+  async runThrowFailure() {
     const result = await this.run();
     return result.getOrElse((err) => {
       throw err;
