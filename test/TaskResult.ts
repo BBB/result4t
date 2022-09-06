@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Result } from "../src/Result";
-import { Task } from "../src/Task";
+import { TaskResult } from "../src/TaskResult";
 
 describe("map", () => {
   it("should transform a success", async () => {
-    const a = await Task.success(1)
+    const a = await TaskResult.success(1)
       .map(() => "hello")
       .map(() => true);
 
@@ -18,7 +18,9 @@ describe("mapFailure", () => {
       name = "BooError";
     }
     const booError = new BooError();
-    const a = await Task.failure(new Error("Boo")).mapFailure(() => booError);
+    const a = await TaskResult.failure(new Error("Boo")).mapFailure(
+      () => booError
+    );
 
     expect(a).toEqual(Result.failure(booError));
   });
@@ -30,29 +32,33 @@ describe("PromiseLike", () => {
       name = "BooError";
     }
     const booError = new BooError();
-    const a = await Task.failure(new Error("Boo")).mapFailure(() => booError);
+    const a = await TaskResult.failure(new Error("Boo")).mapFailure(
+      () => booError
+    );
 
     expect(a).toEqual(Result.failure(booError));
   });
 
   it("should pass the inner to a then", async () => {
     expect(
-      await Task.success(true).then((a) => a.getOrElse(() => "woo"))
+      await TaskResult.success(true).then((a) => a.getOrElse(() => "woo"))
     ).toEqual(true);
   });
 });
 
 describe("runThrowLeft", () => {
   it("should return the success", async () => {
-    await expect(Task.success(true).runThrowFailure()).resolves.toEqual(true);
+    await expect(TaskResult.success(true).runThrowFailure()).resolves.toEqual(
+      true
+    );
   });
   it("should throw the failure", async () => {
     class BooError extends Error {
       name = "BooError";
     }
     const booError = new BooError();
-    await expect(Task.failure(booError).runThrowFailure()).rejects.toEqual(
-      booError
-    );
+    await expect(
+      TaskResult.failure(booError).runThrowFailure()
+    ).rejects.toEqual(booError);
   });
 });

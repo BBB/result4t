@@ -3,19 +3,21 @@ import { Failure, Maybe, Success } from "./Maybe";
 
 type TaskMaybe<F, S> = () => Promise<Maybe<F, S>>;
 
-export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
+export class TaskResult<F = never, S = never>
+  implements PromiseLike<Result<F, S>>
+{
   constructor(private inner: TaskMaybe<F, S>) {}
 
   static success<F, S>(result: S) {
-    return new Task<F, S>(() => Promise.resolve(new Success(result)));
+    return new TaskResult<F, S>(() => Promise.resolve(new Success(result)));
   }
 
   static failure<F, S>(result: F) {
-    return new Task<F, S>(() => Promise.resolve(new Failure(result)));
+    return new TaskResult<F, S>(() => Promise.resolve(new Failure(result)));
   }
 
   static ofPromise<F, S>(run: () => Promise<S>, onError: (err: unknown) => F) {
-    return new Task<F, S>(() =>
+    return new TaskResult<F, S>(() =>
       run().then(
         (s) => new Success(s),
         (err) => new Failure(onError(err))
@@ -23,16 +25,16 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     );
   }
 
-  map<R2 = never>(param: (a: S) => R2): Task<F, R2> {
-    return new Task(() =>
+  map<R2 = never>(param: (a: S) => R2): TaskResult<F, R2> {
+    return new TaskResult(() =>
       this.inner().then((result) =>
         result.isSuccess() ? new Success(param(result.value)) : result
       )
     );
   }
 
-  mapFailure<L2 = never>(param: (a: F) => L2): Task<L2, S> {
-    return new Task(() =>
+  mapFailure<L2 = never>(param: (a: F) => L2): TaskResult<L2, S> {
+    return new TaskResult(() =>
       this.inner().then((result) =>
         result.isFailure() ? new Failure(param(result.value)) : result
       )
@@ -70,8 +72,8 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     );
   }
 
-  flatMap<S2, F2>(param: (success: S) => Task<F | F2, S2>) {
-    return new Task<F | F2, S2>(() =>
+  flatMap<S2, F2>(param: (success: S) => TaskResult<F | F2, S2>) {
+    return new TaskResult<F | F2, S2>(() =>
       this.inner().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
