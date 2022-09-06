@@ -42,7 +42,7 @@ const isError = (maybeError: unknown): maybeError is Error =>
   maybeError instanceof Error;
 
 const readFile = (filePath: FilePath) =>
-  TaskResult.ofPromise(
+  TaskResult.fromPromise(
     async () => Buffer.from(`contents:${filePath}`),
     (err) =>
       isError(err)
@@ -50,8 +50,8 @@ const readFile = (filePath: FilePath) =>
         : new FileSystemError(`Unable to readFile at "${filePath}"`)
   );
 
-const printFile = (contents: Buffer) =>
-  TaskResult.ofPromise(
+const printFile = (_: Buffer) =>
+  TaskResult.fromPromise(
     async () => undefined,
     (err) =>
       isError(err)

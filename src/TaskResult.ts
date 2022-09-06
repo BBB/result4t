@@ -16,7 +16,10 @@ export class TaskResult<F = never, S = never>
     return new TaskResult<F, S>(() => Promise.resolve(new Failure(result)));
   }
 
-  static ofPromise<F, S>(run: () => Promise<S>, mapError: (err: unknown) => F) {
+  static fromPromise<F, S>(
+    run: () => Promise<S>,
+    mapError: (err: unknown) => F
+  ) {
     return new TaskResult<F, S>(() =>
       run().then(
         (s) => new Success(s),
