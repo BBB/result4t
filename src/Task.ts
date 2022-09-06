@@ -1,17 +1,17 @@
 import { Result } from "./Result";
 import { Failure, Success } from "./Maybe";
 
-type TaskResult<F, S> = () => Promise<Failure<F> | Success<S>>;
+type TaskMaybe<F, S> = () => Promise<Failure<F> | Success<S>>;
 
 export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
-  constructor(private inner: TaskResult<F, S>) {}
+  constructor(private inner: TaskMaybe<F, S>) {}
 
-  static success<S>(result: S) {
-    return new Task(() => Promise.resolve(new Success(result)));
+  static success<F, S>(result: S) {
+    return new Task<F, S>(() => Promise.resolve(new Success(result)));
   }
 
-  static failure<F>(result: F) {
-    return new Task(() => Promise.resolve(new Failure(result)));
+  static failure<F, S>(result: F) {
+    return new Task<F, S>(() => Promise.resolve(new Failure(result)));
   }
 
   static ofPromise<F, S>(run: () => Promise<S>, onError: (err: unknown) => F) {
@@ -70,8 +70,8 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     );
   }
 
-  flatMap<S2>(param: (success: S) => Task<F, S2>) {
-    return new Task<F, S2>(() =>
+  flatMap<S2, F2>(param: (success: S) => Task<F | F2, S2>) {
+    return new Task<F | F2, S2>(() =>
       this.inner().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
