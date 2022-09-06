@@ -1,31 +1,4 @@
-abstract class Maybe {
-  isFailure() {
-    return false;
-  }
-  isSuccess() {
-    return false;
-  }
-}
-
-class Failure<T> extends Maybe {
-  constructor(public readonly value: T) {
-    super();
-  }
-
-  isFailure(): this is Failure<T> {
-    return true;
-  }
-}
-
-class Success<T> extends Maybe {
-  constructor(public readonly value: T) {
-    super();
-  }
-
-  isSuccess(): this is Success<T> {
-    return true;
-  }
-}
+import { Failure, Success } from "./Maybe";
 
 export class Result<F, S> {
   constructor(private readonly inner: Failure<F> | Success<S>) {}
