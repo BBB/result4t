@@ -1,28 +1,28 @@
-abstract class Side {
-  isLeft() {
+abstract class Maybe {
+  isFailure() {
     return false;
   }
-  isRight() {
+  isSuccess() {
     return false;
   }
 }
 
-class Failure<T> extends Side {
+class Failure<T> extends Maybe {
   constructor(public readonly value: T) {
     super();
   }
 
-  isLeft(): this is Failure<T> {
+  isFailure(): this is Failure<T> {
     return true;
   }
 }
 
-class Success<T> extends Side {
+class Success<T> extends Maybe {
   constructor(public readonly value: T) {
     super();
   }
 
-  isRight(): this is Success<T> {
+  isSuccess(): this is Success<T> {
     return true;
   }
 }
@@ -38,26 +38,34 @@ export class Result<F, S> {
     return new Result<F2, S2>(new Failure(l));
   }
 
-  map<R2 = never>(param: (a: S) => R2): Result<F, R2> {
-    return this.inner.isRight()
+  map<S2 = never>(param: (a: S) => S2): Result<F, S2> {
+    return this.inner.isSuccess()
       ? Result.success(param(this.inner.value))
       : Result.failure(this.inner.value);
   }
 
-  mapLeft<L2 = never>(param: (a: F) => L2): Result<L2, S> {
-    return this.inner.isLeft()
+  flatMap<S2 = never>(param: (a: S) => Result<F, S2>): Result<F, S2> {
+    return this.inner.isSuccess()
+      ? param(this.inner.value)
+      : Result.failure(this.inner.value);
+  }
+
+  mapFailure<F2 = never>(param: (a: F) => F2): Result<F2, S> {
+    return this.inner.isFailure()
       ? Result.failure(param(this.inner.value))
       : Result.success(this.inner.value);
   }
 
-  fold<Out>(onLeft: (a: F) => Out, onRight: (a: S) => Out) {
-    return this.inner.isLeft()
-      ? onLeft(this.inner.value)
-      : onRight(this.inner.value);
+  fold<Out>(onFailure: (a: F) => Out, onSuccess: (a: S) => Out) {
+    return this.inner.isFailure()
+      ? onFailure(this.inner.value)
+      : onSuccess(this.inner.value);
   }
 
-  getOrElse<Out>(onLeft: (a: F) => Out) {
-    return this.inner.isLeft() ? onLeft(this.inner.value) : this.inner.value;
+  getOrElse<Out>(onFailure: (a: F) => Out) {
+    return this.inner.isFailure()
+      ? onFailure(this.inner.value)
+      : this.inner.value;
   }
 
   get() {
