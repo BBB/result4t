@@ -1,47 +1,47 @@
 import { Failure, Maybe, Success } from "./Maybe";
 
 export class Result<F, S> {
-  constructor(private readonly inner: Maybe<F, S>) {}
+  constructor(private readonly maybe: Maybe<F, S>) {}
 
-  static success<F2, S2>(r: S2) {
-    return new Result<F2, S2>(new Success(r));
+  static success<F2, S2>(success: S2) {
+    return new Result<F2, S2>(new Success(success));
   }
 
-  static failure<F2, S2>(l: F2) {
-    return new Result<F2, S2>(new Failure(l));
+  static failure<F2, S2>(failure: F2) {
+    return new Result<F2, S2>(new Failure(failure));
   }
 
-  map<S2 = never>(param: (a: S) => S2): Result<F, S2> {
-    return this.inner.isSuccess()
-      ? Result.success(param(this.inner.value))
-      : Result.failure(this.inner.value);
+  map<S2 = never>(map: (success: S) => S2): Result<F, S2> {
+    return this.maybe.isSuccess()
+      ? Result.success(map(this.maybe.value))
+      : Result.failure(this.maybe.value);
   }
 
-  flatMap<S2 = never>(param: (a: S) => Result<F, S2>): Result<F, S2> {
-    return this.inner.isSuccess()
-      ? param(this.inner.value)
-      : Result.failure(this.inner.value);
+  flatMap<S2 = never>(map: (success: S) => Result<F, S2>): Result<F, S2> {
+    return this.maybe.isSuccess()
+      ? map(this.maybe.value)
+      : Result.failure(this.maybe.value);
   }
 
-  mapFailure<F2 = never>(param: (a: F) => F2): Result<F2, S> {
-    return this.inner.isFailure()
-      ? Result.failure(param(this.inner.value))
-      : Result.success(this.inner.value);
+  mapFailure<F2 = never>(map: (failure: F) => F2): Result<F2, S> {
+    return this.maybe.isFailure()
+      ? Result.failure(map(this.maybe.value))
+      : Result.success(this.maybe.value);
   }
 
-  fold<Out>(onFailure: (a: F) => Out, onSuccess: (a: S) => Out) {
-    return this.inner.isFailure()
-      ? onFailure(this.inner.value)
-      : onSuccess(this.inner.value);
+  fold<Out>(onFailure: (failure: F) => Out, onSuccess: (success: S) => Out) {
+    return this.maybe.isFailure()
+      ? onFailure(this.maybe.value)
+      : onSuccess(this.maybe.value);
   }
 
-  getOrElse<Out>(onFailure: (a: F) => Out) {
-    return this.inner.isFailure()
-      ? onFailure(this.inner.value)
-      : this.inner.value;
+  getOrElse<Out>(onFailure: (failure: F) => Out) {
+    return this.maybe.isFailure()
+      ? onFailure(this.maybe.value)
+      : this.maybe.value;
   }
 
   get() {
-    return this.inner.value;
+    return this.maybe.value;
   }
 }

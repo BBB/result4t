@@ -6,7 +6,7 @@ type TaskMaybe<F, S> = () => Promise<Maybe<F, S>>;
 export class TaskResult<F = never, S = never>
   implements PromiseLike<Result<F, S>>
 {
-  constructor(private inner: TaskMaybe<F, S>) {}
+  constructor(private taskMaybe: TaskMaybe<F, S>) {}
 
   static success<F, S>(result: S) {
     return new TaskResult<F, S>(() => Promise.resolve(new Success(result)));
@@ -16,33 +16,33 @@ export class TaskResult<F = never, S = never>
     return new TaskResult<F, S>(() => Promise.resolve(new Failure(result)));
   }
 
-  static ofPromise<F, S>(run: () => Promise<S>, onError: (err: unknown) => F) {
+  static ofPromise<F, S>(run: () => Promise<S>, mapError: (err: unknown) => F) {
     return new TaskResult<F, S>(() =>
       run().then(
         (s) => new Success(s),
-        (err) => new Failure(onError(err))
+        (err) => new Failure(mapError(err))
       )
     );
   }
 
-  map<R2 = never>(param: (a: S) => R2): TaskResult<F, R2> {
+  map<R2 = never>(map: (success: S) => R2): TaskResult<F, R2> {
     return new TaskResult(() =>
-      this.inner().then((result) =>
-        result.isSuccess() ? new Success(param(result.value)) : result
+      this.taskMaybe().then((maybe) =>
+        maybe.isSuccess() ? new Success(map(maybe.value)) : maybe
       )
     );
   }
 
-  mapFailure<L2 = never>(param: (a: F) => L2): TaskResult<L2, S> {
+  mapFailure<L2 = never>(map: (failure: F) => L2): TaskResult<L2, S> {
     return new TaskResult(() =>
-      this.inner().then((result) =>
-        result.isFailure() ? new Failure(param(result.value)) : result
+      this.taskMaybe().then((maybe) =>
+        maybe.isFailure() ? new Failure(map(maybe.value)) : maybe
       )
     );
   }
 
   run() {
-    return this.inner();
+    return this.taskMaybe();
   }
 
   async runThrowFailure() {
@@ -53,10 +53,10 @@ export class TaskResult<F = never, S = never>
     return result.value;
   }
 
-  private toResult(inner: Failure<F> | Success<S>) {
-    return inner.isSuccess()
-      ? Result.success<F, S>(inner.value)
-      : Result.failure<F, S>(inner.value);
+  private toResult(maybe: Maybe<F, S>) {
+    return maybe.isSuccess()
+      ? Result.success<F, S>(maybe.value)
+      : Result.failure<F, S>(maybe.value);
   }
 
   then<Out1 = Result<F, S>, Out2 = never>(
@@ -74,7 +74,7 @@ export class TaskResult<F = never, S = never>
 
   flatMap<S2, F2>(param: (success: S) => TaskResult<F | F2, S2>) {
     return new TaskResult<F | F2, S2>(() =>
-      this.inner().then((inner) => {
+      this.taskMaybe().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
         } else {

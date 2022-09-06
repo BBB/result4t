@@ -7,7 +7,6 @@ const toString = <T extends { toString(): string }>(a: T) => a.toString();
 describe("success", () => {
   it("should contain a value", () => {
     const result = Result.success("success");
-    expect(result).toHaveProperty("inner");
     expect(result.get()).toEqual("success");
   });
 });
@@ -15,7 +14,6 @@ describe("success", () => {
 describe("failure", () => {
   it("should contain a value", () => {
     const result = Result.failure("failure");
-    expect(result).toHaveProperty("inner");
     expect(result.get()).toEqual("failure");
   });
 });
