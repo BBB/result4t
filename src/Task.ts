@@ -1,7 +1,7 @@
 import { Result } from "./Result";
-import { Failure, Success } from "./Maybe";
+import { Failure, Maybe, Success } from "./Maybe";
 
-type TaskMaybe<F, S> = () => Promise<Failure<F> | Success<S>>;
+type TaskMaybe<F, S> = () => Promise<Maybe<F, S>>;
 
 export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
   constructor(private inner: TaskMaybe<F, S>) {}
