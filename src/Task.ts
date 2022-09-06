@@ -69,4 +69,16 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
       onrejected ? (inner) => onrejected(this.toResult(inner)) : onrejected
     );
   }
+
+  flatMap<S2>(param: (success: S) => Task<F, S2>) {
+    return new Task<F, S2>(() =>
+      this.inner().then((inner) => {
+        if (inner.isSuccess()) {
+          return param(inner.value).run();
+        } else {
+          return inner;
+        }
+      })
+    );
+  }
 }
