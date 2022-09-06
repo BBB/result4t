@@ -13,16 +13,23 @@ export class Task<F = never, S = never> implements PromiseLike<Result<F, S>> {
     return new Task(() => Promise.resolve(Result.failure(result)));
   }
 
+  static ofPromise<F, S>(run: () => Promise<S>, onError: (err: unknown) => F) {
+    return new Task<F, S>(() =>
+      run().then(
+        (s) => Result.success(s),
+        (err) => Result.failure(onError(err))
+      )
+    );
+  }
+
   map<R2 = never>(param: (a: S) => R2): Task<F, R2> {
     return new Task(() => this.inner().then((result) => result.map(param)));
   }
 
-  flatMap<S2>(param: (a: Task<F,S>) => Task<F, S2>) {
-    return param(this)
-  }
-
-  mapLeft<L2 = never>(param: (a: F) => L2): Task<L2, S> {
-    return new Task(() => this.inner().then((result) => result.mapLeft(param)));
+  mapFailure<L2 = never>(param: (a: F) => L2): Task<L2, S> {
+    return new Task(() =>
+      this.inner().then((result) => result.mapFailure(param))
+    );
   }
 
   run() {
