@@ -65,7 +65,7 @@ it("should allow for flatMap across failures with the same supertype", async () 
   );
   const out = await task
     .mapFailure((err) => err)
-    .flatMap((fileContents) => printFile(fileContents))
+    .flatMap(printFile)
     .map(() => "all done");
   expect(out).toStrictEqual(Result.success("all done"));
 });
