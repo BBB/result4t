@@ -7,25 +7,34 @@ const toString = <T extends { toString(): string }>(a: T) => a.toString();
 describe("success", () => {
   it("should contain a value", () => {
     const result = Result.success("success");
-    expect(result.get()).toEqual("success");
+    expect(result).toStrictEqual(Result.success("success"));
   });
 });
 
 describe("failure", () => {
   it("should contain a value", () => {
     const result = Result.failure("failure");
-    expect(result.get()).toEqual("failure");
+    expect(result).toStrictEqual(Result.failure("failure"));
+  });
+});
+
+describe("flatMap", () => {
+  it("should contain a value", () => {
+    const result = Result.success("failure").flatMap(() =>
+      Result.failure("oh no")
+    );
+    expect(result).toStrictEqual(Result.failure("oh no"));
   });
 });
 
 describe("map", () => {
   it("should transform a success", () => {
     const result = Result.success("success").map(reverseString);
-    expect(result.get()).toEqual("sseccus");
+    expect(result).toStrictEqual(Result.success("sseccus"));
   });
   it("should not transform a failure", () => {
     const result = Result.failure<string, string>("failure").map(reverseString);
-    expect(result.get()).toEqual("failure");
+    expect(result).toStrictEqual(Result.failure("failure"));
   });
 });
 
@@ -34,13 +43,13 @@ describe("mapFailure", () => {
     const result = Result.failure<string, string>("failure").mapFailure(
       reverseString
     );
-    expect(result.get()).toEqual("eruliaf");
+    expect(result).toStrictEqual(Result.failure("eruliaf"));
   });
   it("should not transform a success", () => {
     const result = Result.success<string, string>("success").mapFailure(
       reverseString
     );
-    expect(result.get()).toEqual("success");
+    expect(result).toStrictEqual(Result.success("success"));
   });
 });
 

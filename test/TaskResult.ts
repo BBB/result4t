@@ -8,7 +8,7 @@ describe("map", () => {
       .map(() => "hello")
       .map(() => true);
 
-    expect(out).toEqual(Result.success(true));
+    expect(out).toStrictEqual(Result.success(true));
   });
 });
 
@@ -22,7 +22,7 @@ describe("mapFailure", () => {
       () => booError
     );
 
-    expect(out).toEqual(Result.failure(booError));
+    expect(out).toStrictEqual(Result.failure(booError));
   });
 });
 
@@ -36,18 +36,18 @@ describe("PromiseLike", () => {
       () => booError
     );
 
-    expect(out).toEqual(Result.failure(booError));
+    expect(out).toStrictEqual(Result.failure(booError));
   });
 
   it("should pass a Result to a then", async () => {
     const out = await TaskResult.success(true).then((a) =>
       a.getOrElse(() => "woo")
     );
-    expect(out).toEqual(true);
+    expect(out).toStrictEqual(true);
   });
 });
 
-describe("runThrowLeft", () => {
+describe("runThrowFailure", () => {
   it("should return the success", async () => {
     const out = TaskResult.success(true).runThrowFailure();
     await expect(out).resolves.toEqual(true);
@@ -58,6 +58,6 @@ describe("runThrowLeft", () => {
     }
     const booError = new BooError();
     const out = TaskResult.failure(booError).runThrowFailure();
-    await expect(out).rejects.toEqual(booError);
+    await expect(out).rejects.toStrictEqual(booError);
   });
 });
