@@ -75,8 +75,8 @@ export class TaskResult<F = never, S = never>
     );
   }
 
-  flatMap<S2, F2>(param: (success: S) => TaskResult<F | F2, S2>) {
-    return new TaskResult<F | F2, S2>(() =>
+  flatMap<S2>(param: (success: S) => TaskResult<F, S2>) {
+    return new TaskResult<F, S2>(() =>
       this.taskMaybe().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
