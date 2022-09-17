@@ -2,10 +2,10 @@ import { TaskResult } from "../src/TaskResult";
 import { it, expect } from "vitest";
 import { Result } from "../src/Result";
 
-class NestedError<Err extends Error = Error> extends Error {
+abstract class NestedError<Err extends Error = Error> extends Error {
   name = "NestedError";
 
-  constructor(message: string, public innerError?: Err) {
+  protected constructor(message: string, public innerError?: Err) {
     super(message);
   }
 }
