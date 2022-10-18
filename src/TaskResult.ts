@@ -44,6 +44,30 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
+    return new TaskResult<S2, F>(() =>
+      this.taskMaybe().then((inner) => {
+        if (inner.isSuccess()) {
+          return param(inner.value).run();
+        } else {
+          return inner;
+        }
+      })
+    );
+  }
+
+  flatMapFailure<F2>(param: (failure: F) => TaskResult<S, F2>) {
+    return new TaskResult<S, F2>(() =>
+      this.taskMaybe().then((inner) => {
+        if (inner.isFailure()) {
+          return param(inner.value).run();
+        } else {
+          return inner;
+        }
+      })
+    );
+  }
+
   run() {
     return this.taskMaybe();
   }
@@ -72,18 +96,6 @@ export class TaskResult<S = never, F = never>
     return this.run().then(
       onfulfilled ? (inner) => onfulfilled(this.toResult(inner)) : onfulfilled,
       onrejected ? (inner) => onrejected(this.toResult(inner)) : onrejected
-    );
-  }
-
-  flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
-    return new TaskResult<S2, F>(() =>
-      this.taskMaybe().then((inner) => {
-        if (inner.isSuccess()) {
-          return param(inner.value).run();
-        } else {
-          return inner;
-        }
-      })
     );
   }
 }
