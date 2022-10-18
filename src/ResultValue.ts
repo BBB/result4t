@@ -1,4 +1,4 @@
-abstract class MaybeValue {
+abstract class ResultValueBase {
   isFailure() {
     return false;
   }
@@ -8,9 +8,9 @@ abstract class MaybeValue {
   }
 }
 
-export type Maybe<F, S> = Failure<F> | Success<S>;
+export type ResultValue<F, S> = Failure<F> | Success<S>;
 
-export class Failure<T> extends MaybeValue {
+export class Failure<T> extends ResultValueBase {
   constructor(public readonly value: T) {
     super();
   }
@@ -20,7 +20,7 @@ export class Failure<T> extends MaybeValue {
   }
 }
 
-export class Success<T> extends MaybeValue {
+export class Success<T> extends ResultValueBase {
   constructor(public readonly value: T) {
     super();
   }

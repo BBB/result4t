@@ -1,7 +1,7 @@
-import { Failure, Maybe, Success } from "./Maybe";
+import { Failure, ResultValue, Success } from "./ResultValue";
 
 export class Result<F, S> {
-  constructor(private readonly maybe: Maybe<F, S>) {}
+  constructor(private readonly maybe: ResultValue<F, S>) {}
 
   static success<F2, S2>(success: S2) {
     return new Result<F2, S2>(new Success(success));

@@ -1,7 +1,7 @@
 import { Result } from "./Result";
-import { Failure, Maybe, Success } from "./Maybe";
+import { Failure, ResultValue, Success } from "./ResultValue";
 
-type TaskMaybe<F, S> = () => Promise<Maybe<F, S>>;
+type TaskMaybe<F, S> = () => Promise<ResultValue<F, S>>;
 
 export class TaskResult<F = never, S = never>
   implements PromiseLike<Result<F, S>>
@@ -56,7 +56,7 @@ export class TaskResult<F = never, S = never>
     return result.value;
   }
 
-  private toResult(maybe: Maybe<F, S>) {
+  private toResult(maybe: ResultValue<F, S>) {
     return maybe.isSuccess()
       ? Result.success<F, S>(maybe.value)
       : Result.failure<F, S>(maybe.value);
