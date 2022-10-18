@@ -7,10 +7,8 @@ abstract class Nested {
 }
 
 class FileSystemFailure extends Nested {
-  name = "FileSystemFailure" as const;
-
-  constructor(public method: string, inner?: unknown) {
-    super(`Unable to call ${method}`, inner);
+  constructor(public message: string, inner?: unknown) {
+    super(message, inner);
   }
 
   static unknownReadIssue(filePath: FilePath, inner: unknown) {
@@ -31,8 +29,6 @@ class FileSystemFailure extends Nested {
 }
 
 class PrinterFailure extends Nested {
-  name = "PrinterFailure" as const;
-
   constructor(message: string, inner?: unknown) {
     super(message, inner);
   }
@@ -53,7 +49,7 @@ class FilePath {
 const isError = (maybeError: unknown): maybeError is Error =>
   maybeError instanceof Error;
 
-const readFile = (filePath: FilePath) =>
+const readFile = (filePath: FilePath): TaskResult<Buffer, FileSystemFailure> =>
   TaskResult.fromPromise(
     async () => Buffer.from(`contents:${filePath}`),
     (err) => FileSystemFailure.fromNodeError(err, filePath)
@@ -66,11 +62,7 @@ const printFile = (_: Buffer) =>
   );
 
 it("should allow for flatMap across failures with the same supertype", async () => {
-  const task = TaskResult.success<Error, undefined>(undefined).flatMap(() =>
-    readFile(FilePath.of("./woo"))
-  );
-  const out = await task
-    .mapFailure((err) => err)
+  const out = await readFile(FilePath.of("./woo"))
     .flatMap(printFile)
     .map(() => "all done");
   expect(out).toStrictEqual(Result.success("all done"));

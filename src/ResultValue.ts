@@ -8,7 +8,7 @@ abstract class ResultValueBase {
   }
 }
 
-export type ResultValue<F, S> = Failure<F> | Success<S>;
+export type ResultValue<S, F> = Success<S> | Failure<F>;
 
 export class Failure<T> extends ResultValueBase {
   constructor(public readonly value: T) {

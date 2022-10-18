@@ -55,14 +55,14 @@ describe("mapFailure", () => {
 
 describe("fold", () => {
   it("should transform a failure", () => {
-    const result = Result.failure<string, number>("failure").fold(
+    const result = Result.failure<number, string>("failure").fold(
       reverseString,
       toString
     );
     expect(result).toEqual("eruliaf");
   });
   it("should transform a success", () => {
-    const result = Result.success<number, string>("success").fold(
+    const result = Result.success<string, number>("success").fold(
       toString,
       reverseString
     );
@@ -73,13 +73,13 @@ describe("fold", () => {
 describe("getOrElse", () => {
   it("should transform a failure", () => {
     const error = new Error("Oops");
-    const result = Result.failure<string, number>("failure").getOrElse(
+    const result = Result.failure<number, string>("failure").getOrElse(
       () => error
     );
     expect(result).toEqual(error);
   });
   it("should return a success", () => {
-    const result = Result.success<number, string>("success").getOrElse(
+    const result = Result.success<string, number>("success").getOrElse(
       () => new Error("Oops")
     );
     expect(result).toEqual("success");
