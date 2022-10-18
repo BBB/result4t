@@ -1,28 +1,40 @@
 import { TaskResult } from "../src/TaskResult";
-import { it, expect } from "vitest";
+import { expect, it } from "vitest";
 import { Result } from "../src/Result";
 
-abstract class NestedError<Err extends Error = Error> extends Error {
-  name = "NestedError";
+abstract class Nested {
+  protected constructor(public message: string, public inner?: unknown) {}
+}
 
-  protected constructor(message: string, public innerError?: Err) {
-    super(message);
+class FileSystemFailure extends Nested {
+  name = "FileSystemFailure" as const;
+
+  constructor(public method: string, inner?: unknown) {
+    super(`Unable to call ${method}`, inner);
+  }
+
+  static unknownReadIssue(filePath: FilePath, inner: unknown) {
+    return new FileSystemFailure(`Unable to readFile at "${filePath}"`, inner);
+  }
+
+  static notFound(filePath: FilePath) {
+    return new FileSystemFailure(`File not found at "${filePath}"`);
+  }
+
+  static fromNodeError(err: unknown, filePath: FilePath) {
+    return isError(err)
+      ? err.message.includes("File not found")
+        ? FileSystemFailure.notFound(filePath)
+        : FileSystemFailure.unknownReadIssue(filePath, err)
+      : FileSystemFailure.unknownReadIssue(filePath, err);
   }
 }
 
-class FileSystemError extends NestedError {
-  name = "FileSystemError";
+class PrinterFailure extends Nested {
+  name = "PrinterFailure" as const;
 
-  constructor(public method: string, innerError?: Error) {
-    super(`Unable to call ${method}`, innerError);
-  }
-}
-
-class PrinterError extends NestedError {
-  name = "PrinterError";
-
-  constructor(message: string, innerError?: Error) {
-    super(message, innerError);
+  constructor(message: string, inner?: unknown) {
+    super(message, inner);
   }
 }
 
@@ -44,19 +56,13 @@ const isError = (maybeError: unknown): maybeError is Error =>
 const readFile = (filePath: FilePath) =>
   TaskResult.fromPromise(
     async () => Buffer.from(`contents:${filePath}`),
-    (err) =>
-      isError(err)
-        ? new FileSystemError(`Unable to readFile at "${filePath}"`, err)
-        : new FileSystemError(`Unable to readFile at "${filePath}"`)
+    (err) => FileSystemFailure.fromNodeError(err, filePath)
   );
 
 const printFile = (_: Buffer) =>
   TaskResult.fromPromise(
     async () => undefined,
-    (err) =>
-      isError(err)
-        ? new PrinterError("Can't connect to printer", err)
-        : new PrinterError("Can't connect to printer")
+    (err) => new PrinterFailure("Can't connect to printer", err)
   );
 
 it("should allow for flatMap across failures with the same supertype", async () => {
