@@ -80,12 +80,6 @@ export class TaskResult<S = never, F = never>
     return result.value;
   }
 
-  private toResult(maybe: ResultValue<S, F>) {
-    return maybe.isSuccess()
-      ? Result.success<S, F>(maybe.value)
-      : Result.failure<S, F>(maybe.value);
-  }
-
   then<Out1 = Result<S, F>, Out2 = never>(
     onfulfilled?:
       | ((value: Result<S, F>) => PromiseLike<Out1> | Out1)
@@ -94,8 +88,14 @@ export class TaskResult<S = never, F = never>
     onrejected?: ((reason: any) => PromiseLike<Out2> | Out2) | undefined | null
   ): PromiseLike<Out1 | Out2> {
     return this.run().then(
-      onfulfilled ? (inner) => onfulfilled(this.toResult(inner)) : onfulfilled,
-      onrejected ? (inner) => onrejected(this.toResult(inner)) : onrejected
+      onfulfilled ? (inner) => onfulfilled(toResult(inner)) : onfulfilled,
+      onrejected ? (inner) => onrejected(toResult(inner)) : onrejected
     );
   }
+}
+
+function toResult<S, F>(maybe: ResultValue<S, F>) {
+  return maybe.isSuccess()
+    ? Result.success<S, F>(maybe.value)
+    : Result.failure<S, F>(maybe.value);
 }
