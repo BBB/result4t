@@ -49,9 +49,8 @@ export class TaskResult<S = never, F = never>
       this.taskMaybe().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
-        } else {
-          return inner;
         }
+        return inner;
       })
     );
   }
@@ -61,9 +60,8 @@ export class TaskResult<S = never, F = never>
       this.taskMaybe().then((inner) => {
         if (inner.isFailure()) {
           return param(inner.value).run();
-        } else {
-          return inner;
         }
+        return inner;
       })
     );
   }
