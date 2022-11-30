@@ -44,6 +44,28 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  peek(peekSuccess: (success: S) => void): TaskResult<S, F> {
+    return new TaskResult(() =>
+      this.taskMaybe().then((maybe) => {
+        if (maybe.isSuccess()) {
+          peekSuccess(maybe.value);
+        }
+        return maybe;
+      })
+    );
+  }
+
+  peekFailure(peekFailure: (failure: F) => void): TaskResult<S, F> {
+    return new TaskResult(() =>
+      this.taskMaybe().then((maybe) => {
+        if (maybe.isFailure()) {
+          peekFailure(maybe.value);
+        }
+        return maybe;
+      })
+    );
+  }
+
   flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
     return new TaskResult<S2, F>(() =>
       this.taskMaybe().then((inner) => {
