@@ -40,6 +40,8 @@ jobs:
         pnpm build
         if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
           pnpm run publish-package
+        else
+          echo "Version already published"
         fi
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
