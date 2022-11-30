@@ -19,6 +19,21 @@
   "files": [
     "./dist/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BBB/result4t.git"
+  },
+  "keywords": [
+    "fp",
+    "result",
+    "option",
+    "monad",
+    "typescript",
+    "typesafe",
+    "promises",
+    "task",
+    "node"
+  ],
   "author": "Ollie Relph",
   "license": "MIT"
 }
