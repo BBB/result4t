@@ -25,6 +25,8 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        registry-url: 'https://registry.npmjs.org'
+        scope: '@ollierelph'
     - uses: pnpm/action-setup@v2.2.2
       with:
         version: 7
