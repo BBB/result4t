@@ -34,7 +34,7 @@ jobs:
     - run: pnpm test
     - run: |
         pnpm build
-        if node bin/needs-publish.js '$(node -pe "require('./package.json').name")' '$(node -pe "require('./package.json').version")' ; then
+        if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
           pnpm run publish
         fi
 
