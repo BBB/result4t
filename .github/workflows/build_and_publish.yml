@@ -31,10 +31,14 @@ jobs:
         run_install: |
           - recursive: true
             args: [--frozen-lockfile, --strict-peer-dependencies]
-    - run: pnpm test
-    - run: |
+    - name: Test
+      run: pnpm test
+    - name: Buidl and Publish if required
+      run: |
         pnpm build
         if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
           pnpm run publish-package
         fi
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
