@@ -1,8 +1,8 @@
 {
-  "name": "result4t",
+  "name": "@ollierelph/result4t",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
     "@types/node": "^18.0.0",
@@ -12,8 +12,13 @@
   },
   "scripts": {
     "test": "pnpm vitest",
-    "format": "prettier --write ./"
+    "build": "pnpm tsc -p tsconfig.build.json",
+    "format": "prettier --write ./",
+    "publish": "pnpm publish --access public --dry-run"
   },
-  "author": "",
-  "license": "ISC"
+  "files": [
+    "./dist/*"
+  ],
+  "author": "Ollie Relph <ollie+npm@relph.me>",
+  "license": "MIT"
 }

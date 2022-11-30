@@ -11,7 +11,7 @@ export class None {
   }
 }
 
-class Some<T> {
+export class Some<T> {
   constructor(public value: T) {}
   isNone() {
     return false;
