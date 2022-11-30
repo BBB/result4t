@@ -33,7 +33,7 @@ jobs:
             args: [--frozen-lockfile, --strict-peer-dependencies]
     - name: Test
       run: pnpm test
-    - name: Buidl and Publish if required
+    - name: Build and Publish (if required)
       run: |
         pnpm build
         if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
