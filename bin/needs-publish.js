@@ -7,7 +7,7 @@ const needsPublish = (packageName, version) => {
     })
     .then((response) => {
       console.log({ response });
-      return !(version in response.versions);
+      return !(version in response.time);
     })
     .catch(() => true);
 };
