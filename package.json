@@ -14,7 +14,7 @@
     "test": "pnpm vitest",
     "build": "pnpm tsc -p tsconfig.build.json",
     "format": "prettier --write ./",
-    "publish": "pnpm publish --access public --dry-run --no-git-checks"
+    "publish-package": "pnpm publish --access public --dry-run --no-git-checks"
   },
   "files": [
     "./dist/*"

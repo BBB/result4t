@@ -35,6 +35,6 @@ jobs:
     - run: |
         pnpm build
         if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
-          pnpm run publish
+          pnpm run publish-package
         fi
 
