@@ -1,20 +1,23 @@
-export class None {
-  isNone(): this is None {
-    return true;
+abstract class OptionValueBase {
+  isNone() {
+    return false;
   }
   isSome() {
     return false;
   }
-
+}
+export class None extends OptionValueBase {
+  isNone(): this is None {
+    return true;
+  }
   orElse<V>(value: V) {
     return value;
   }
 }
 
-export class Some<T> {
-  constructor(public value: T) {}
-  isNone() {
-    return false;
+export class Some<T> extends OptionValueBase {
+  constructor(public value: T) {
+    super();
   }
   isSome(): this is Some<T> {
     return true;
