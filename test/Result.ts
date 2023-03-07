@@ -9,12 +9,20 @@ describe("success", () => {
     const result = Result.success("success");
     expect(result).toStrictEqual(Result.success("success"));
   });
+  it("will be success", () => {
+    const result = Result.success("success");
+    expect(result.isSuccess()).toStrictEqual(true);
+  });
 });
 
 describe("failure", () => {
   it("should contain a value", () => {
     const result = Result.failure("failure");
     expect(result).toStrictEqual(Result.failure("failure"));
+  });
+  it("will be failure", () => {
+    const result = Result.failure("failure");
+    expect(result.isFailure()).toStrictEqual(true);
   });
 });
 

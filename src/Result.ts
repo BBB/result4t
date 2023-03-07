@@ -11,11 +11,11 @@ export class Result<S, F> {
     return new Result<S2, F2>(new Failure(failure));
   }
 
-  public isSuccess() {
+  public isSuccess(): this is Result<S, never> {
     return this.maybe.isSuccess();
   }
 
-  public isFailure() {
+  public isFailure(): this is Result<never, F> {
     return !this.maybe.isSuccess();
   }
 
