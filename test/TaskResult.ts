@@ -2,6 +2,22 @@ import { describe, expect, it } from "vitest";
 import { Result } from "../src/Result";
 import { TaskResult } from "../src/TaskResult";
 
+describe("fromResult", () => {
+  it("will map to a TaskResult", async () => {
+    const out = await TaskResult.fromResult(Result.success(1))
+      .map(() => "hello")
+      .map(() => true);
+
+    expect(out).toStrictEqual(Result.success(true));
+  });
+  it("will map to a TaskResult failure", async () => {
+    const out = await TaskResult.fromResult(Result.failure(1))
+      .map(() => "hello")
+      .map(() => true);
+
+    expect(out).toStrictEqual(Result.failure(1));
+  });
+});
 describe("map", () => {
   it("should transform a success", async () => {
     const out = await TaskResult.success(1)

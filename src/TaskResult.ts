@@ -16,6 +16,14 @@ export class TaskResult<S = never, F = never>
     return new TaskResult<S, F>(() => Promise.resolve(new Failure(result)));
   }
 
+  static fromResult<S, F>(result: Result<S, F>) {
+    return new TaskResult<S, F>(async () =>
+      result.isSuccess()
+        ? new Success(result.get())
+        : new Failure(result.get() as F)
+    );
+  }
+
   static fromPromise<S, F>(
     run: () => Promise<S>,
     mapError: (err: unknown) => F
