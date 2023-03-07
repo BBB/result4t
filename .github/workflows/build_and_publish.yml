@@ -39,13 +39,13 @@ jobs:
       run: |
         pnpm build
         if node bin/needs-publish.js "result4t" $(node -pe "require('./package.json').version") ; then
-          NAME_TO_PUBLISH=result4t pnpm run publish-package "result4t"
+          NAME_TO_PUBLISH=result4t pnpm run publish-package
         else
           echo "Result4t Version already published"
         fi
 
         if node bin/needs-publish.js "ollierelph/result4t" $(node -pe "require('./package.json').version") ; then
-          NAME_TO_PUBLISH=ollierelph/result4t pnpm run publish-package "ollierelph/result4t"
+          NAME_TO_PUBLISH=ollierelph/result4t pnpm run publish-package
         else
           echo "ollierelph/result4t Version already published"
         fi
