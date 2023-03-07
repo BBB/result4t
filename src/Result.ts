@@ -11,6 +11,14 @@ export class Result<S, F> {
     return new Result<S2, F2>(new Failure(failure));
   }
 
+  public isSuccess() {
+    return this.maybe.isSuccess();
+  }
+
+  public isFailure() {
+    return !this.maybe.isSuccess();
+  }
+
   map<S2 = never>(map: (success: S) => S2): Result<S2, F> {
     return this.maybe.isSuccess()
       ? Result.success(map(this.maybe.value))
