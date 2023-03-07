@@ -38,11 +38,16 @@ jobs:
     - name: Build and Publish (if required)
       run: |
         pnpm build
-        if node bin/needs-publish.js $(node -pe "require('./package.json').name") $(node -pe "require('./package.json').version") ; then
-          pnpm run publish-package
+        if node bin/needs-publish.js $(node -pe "result4t") $(node -pe "require('./package.json').version") ; then
+          NAME_TO_PUBLISH=result4t pnpm run publish-package "result4t"
         else
-          echo "Version already published"
+          echo "Result4t Version already published"
+        fi
+
+        if node bin/needs-publish.js $(node -pe "ollierelph/result4t") $(node -pe "require('./package.json').version") ; then
+          NAME_TO_PUBLISH=ollierelph/result4t pnpm run publish-package "ollierelph/result4t"
+        else
+          echo "ollierelph/result4t Version already published"
         fi
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
