@@ -14,7 +14,7 @@
     "test": "pnpm vitest",
     "build": "pnpm tsc -p tsconfig.build.json",
     "format": "prettier --write ./",
-    "publish-package": "echo \"$(jq --arg name \"${NAME_TO_PUBLISH:-ollierelph/result4t}\" '.name|=$name' package.json)\" > package.json && pnpm publish --access public --no-git-checks"
+    "publish-package": "echo \"$(jq --arg name \"${NAME_TO_PUBLISH:-@ollierelph/result4t}\" '.name|=$name' package.json)\" > package.json && pnpm publish --access public --no-git-checks"
   },
   "files": [
     "./dist/*"
