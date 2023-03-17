@@ -100,6 +100,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Join a `TaskResult` into this `TaskResult` on success
+   */
   flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
     return new TaskResult<S2, F>(() =>
       this.taskMaybe().then((inner) => {
@@ -111,6 +114,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Join a `TaskResult` into this `TaskResult` on failure
+   */
   flatMapFailure<F2>(param: (failure: F) => TaskResult<S, F2>) {
     return new TaskResult<S, F2>(() =>
       this.taskMaybe().then((inner) => {
@@ -122,10 +128,16 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Execute the computation
+   */
   run() {
     return this.taskMaybe();
   }
 
+  /**
+   * Execute the computation, throwing the failure case, rather than returning a Result
+   */
   async runThrowFailure() {
     const result = await this.run();
     if (result.isFailure()) {
@@ -134,6 +146,9 @@ export class TaskResult<S = never, F = never>
     return result.value;
   }
 
+  /**
+   * Allows the `TaskResult` to be `await`ed like a `Promise`
+   */
   then<Out1 = Result<S, F>, Out2 = never>(
     onfulfilled?:
       | ((value: Result<S, F>) => PromiseLike<Out1> | Out1)
