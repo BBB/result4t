@@ -8,14 +8,25 @@ export class TaskResult<S = never, F = never>
 {
   constructor(private taskMaybe: TaskMaybe<S, F>) {}
 
+  /**
+   * Creates a new instance of a successful `TaskResult` based on the value
+   * @param result
+   */
   static success<S, F>(result: S) {
     return new TaskResult<S, F>(() => Promise.resolve(new Success(result)));
   }
 
+  /**
+   * Creates a new instance of a failed `TaskResult` based on the value
+   * @param result
+   */
   static failure<S, F>(result: F) {
     return new TaskResult<S, F>(() => Promise.resolve(new Failure(result)));
   }
 
+  /**
+   * Upgrades a `Result` to a `TaskResult`
+   */
   static fromResult<S, F>(result: Result<S, F>) {
     return new TaskResult<S, F>(async () =>
       result.isSuccess()
@@ -24,6 +35,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Converts a `Promise` to a `TaskResult`
+   */
   static fromPromise<S, F>(
     run: () => Promise<S>,
     mapError: (err: unknown) => F
@@ -36,6 +50,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Use to transform the success value inside the `TaskResult`
+   */
   map<S2 = never>(map: (success: S) => S2): TaskResult<S2, F> {
     return new TaskResult(() =>
       this.taskMaybe().then((maybe) =>
@@ -44,6 +61,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Use to transform the failure value inside the `TaskResult`
+   */
   mapFailure<F2 = never>(map: (failure: F) => F2): TaskResult<S, F2> {
     return new TaskResult(() =>
       this.taskMaybe().then((maybe) =>
@@ -52,6 +72,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Read the success value in the `TaskResult`, useful for sideeffects, or logging
+   */
   peek(peekSuccess: (success: S) => void): TaskResult<S, F> {
     return new TaskResult(() =>
       this.taskMaybe().then((maybe) => {
@@ -63,6 +86,9 @@ export class TaskResult<S = never, F = never>
     );
   }
 
+  /**
+   * Read the failure value in the `TaskResult`, useful for sideeffects, or logging
+   */
   peekFailure(peekFailure: (failure: F) => void): TaskResult<S, F> {
     return new TaskResult(() =>
       this.taskMaybe().then((maybe) => {
