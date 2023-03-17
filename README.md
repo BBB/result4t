@@ -16,15 +16,17 @@ It's a replacement for `Promise` that gives us a stringly-typed error mode.
 
 ```typescript
 import fs from "node:fs"
-const readFileAndReverse = () => fs.readFile("./boom.txt").then(contents => contents.split('\n').reverse().join('\n'))
+
+const readFileAndReverse = () => fs.readFile("./boom.txt")
+    .then(contents => contents.split('\n').reverse().join('\n'))
 
 readFileAndReverse()
-  .then((reversedFile) => {
-    console.log(reversedFile)
-  })
-  .catch((error: unknown) => {
-    console.error(error)
-  })
+    .then((reversedFile) => {
+        console.log(reversedFile)
+    })
+    .catch((error: unknown) => {
+        console.error(error)
+    })
 ```
 
 in `result4t`:
@@ -33,15 +35,18 @@ in `result4t`:
 import fs from "node:fs"
 import {TaskResult} from "./TaskResult";
 
-const readFileAndReverse = () => TaskResult.ofPromise(() => fs.readFile("./boom.txt"), (err: unknown) => new Error("Unable to find file")).map(contents => contents.split('\n').reverse().join('\n'))
+const readFileAndReverse = () => TaskResult.ofPromise(
+    () => fs.readFile("./boom.txt"),
+    (err: unknown) => new Error("Unable to find file")
+).map(contents => contents.split('\n').reverse().join('\n'))
 
 readFileAndReverse()
-  .peek((reversedFile) => {
-    console.log(reversedFile)
-    process.exit(0)
-  })
-  .peekLeft((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+    .peek((reversedFile) => {
+        console.log(reversedFile)
+        process.exit(0)
+    })
+    .peekLeft((error) => {
+        console.error(error)
+        process.exit(1)
+    })
 ```
