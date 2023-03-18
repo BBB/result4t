@@ -10,7 +10,7 @@ Available now
 
 `result4t` takes some pointers from the wonderful [result4k](https://github.com/fork-handles/forkhandles/tree/trunk/result4k)
 
-It's a replacement for `Promise` that gives us a stringly-typed error mode.
+It's a replacement for `Promise` that gives us a strongly-typed error mode.
 
 ## An example
 
