@@ -73,6 +73,41 @@ export class TaskResult<S = never, F = never>
     );
   };
 
+  /**
+   * Runs the tasks in parallel groups, sequentially
+   */
+  static foldChunks = <S, F>(
+    size: number,
+    tasks: TaskResult<S, F>[]
+  ): TaskResult<readonly S[], F> => {
+    const split = chunksOf(size);
+    return split(tasks).reduce(
+      (prev, it) =>
+        prev.flatMap((r1) => TaskResult.map(it).map((r2) => r1.concat(r2))),
+      TaskResult.success<S[], F>([])
+    );
+  };
+
+  /**
+   * Runs the tasks in parallel much like `Promise.all([])`
+   * fails if one errors with a single failure, otherwise
+   * returns an array of the Success
+   */
+  static map = <S, F>(tasks: TaskResult<S, F>[]): TaskResult<S[], F> => {
+    return TaskResult.fromPromise<ResultValue<S, F>[], F>(
+      () => Promise.all(tasks.map((t) => t.run())),
+      (e) => {
+        throw e;
+      }
+    ).flatMap((v) => {
+      if (v.every((it) => it.isSuccess())) {
+        return TaskResult.success<S[], F>(v.map((it) => it.value) as S[]);
+      }
+      return TaskResult.failure<S[], F>(
+        v.find((it) => it.isFailure())!.value as F
+      );
+    });
+  };
 
   /**
    * Use to transform the success value inside the `TaskResult`
@@ -191,4 +226,19 @@ function toResult<S, F>(maybe: ResultValue<S, F>) {
   return maybe.isSuccess()
     ? Result.success<S, F>(maybe.value)
     : Result.failure<S, F>(maybe.value);
+}
+
+function chunksOf(size: number) {
+  return <T>(inputArray: Array<T>) =>
+    inputArray.reduce((resultArray, item, index) => {
+      const chunkIndex = Math.floor(index / size);
+
+      if (!resultArray[chunkIndex]) {
+        resultArray[chunkIndex] = []; // start a new chunk
+      }
+
+      resultArray[chunkIndex].push(item);
+
+      return resultArray;
+    }, [] as Array<T[]>);
 }

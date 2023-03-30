@@ -80,6 +80,48 @@ describe("static", () => {
       expect(out).toStrictEqual(Result.failure(error));
     });
   });
+
+  describe("foldChunks", () => {
+    it("runs the tasks in sequence and returns an ordered array of results", async () => {
+      const out = await TaskResult.foldChunks(1, [
+        sleep(2).map(() => "first"),
+        sleep(1).map(() => "second"),
+        sleep(0).map(() => "third"),
+      ]);
+      expect(out).toStrictEqual(Result.success(["first", "second", "third"]));
+    });
+
+    it("responds with a failure if one fails", async () => {
+      const error = new Error("Boom");
+      const out = await TaskResult.foldChunks(1, [
+        sleep(2).map(() => "first"),
+        TaskResult.failure(error),
+        sleep(0).map(() => "third"),
+      ]);
+      expect(out).toStrictEqual(Result.failure(error));
+    });
+  });
+
+  describe("map", () => {
+    it("runs the tasks in sequence and returns an ordered array of results", async () => {
+      const out = await TaskResult.map([
+        sleep(2).map(() => "first"),
+        sleep(1).map(() => "second"),
+        sleep(0).map(() => "third"),
+      ]);
+      expect(out).toStrictEqual(Result.success(["first", "second", "third"]));
+    });
+
+    it("responds with a failure if one fails", async () => {
+      const error = new Error("Boom");
+      const out = await TaskResult.map([
+        sleep(2).map(() => "first"),
+        TaskResult.failure(error),
+        sleep(0).map(() => "third"),
+      ]);
+      expect(out).toStrictEqual(Result.failure(error));
+    });
+  });
 });
 describe("instance", () => {
   describe("map", () => {
