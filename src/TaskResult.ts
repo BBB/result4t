@@ -51,6 +51,16 @@ export class TaskResult<S = never, F = never>
   }
 
   /**
+   * A new TaskResult from a nullable value
+   */
+  static fromNullable<S, F>(
+    value: S | undefined | null,
+    rejection: F
+  ): TaskResult<S, F> {
+    return value ? TaskResult.success(value) : TaskResult.failure(rejection);
+  }
+
+  /**
    * Runs the tasks sequentially
    */
   static fold = <S, F>(

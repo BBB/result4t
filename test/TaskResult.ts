@@ -3,6 +3,8 @@ import utils from "node:util";
 import { Result } from "../src/Result";
 import { TaskResult } from "../src/TaskResult";
 
+class Failed {}
+
 const sleep = (ms: number) =>
   TaskResult.fromPromise(
     () => utils.promisify(setTimeout)(ms),
@@ -26,18 +28,29 @@ describe("static", () => {
       expect(out).toStrictEqual(Result.failure(1));
     });
   });
+  describe("fromNullable", () => {
+    it("will map to a TaskResult", async () => {
+      const out = await TaskResult.fromNullable("hello", new Failed());
+
+      expect(out).toStrictEqual(Result.success("hello"));
+    });
+    it("will map to a TaskResult failure", async () => {
+      const out = await TaskResult.fromNullable(null, new Failed());
+
+      expect(out).toStrictEqual(Result.failure(new Failed()));
+    });
+  });
   describe("fromPromise", () => {
     it("will convert the Promise<T> to a TaskResult<T>", async () => {
       const out = await TaskResult.fromPromise(
         () => Promise.resolve(1),
-        (err) => new (class Failed {})()
+        (err) => new Failed()
       ).map((int) => int + 1);
 
       expect(out).toStrictEqual(Result.success(2));
     });
 
     it("will convert the error to TaskResult<never,E>", async () => {
-      class Failed {}
       const out = await TaskResult.fromPromise(
         () => Promise.reject(1),
         (err) => new Failed()
