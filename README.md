@@ -23,9 +23,11 @@ const readFileAndReverse = () => fs.readFile("./boom.txt")
 readFileAndReverse()
     .then((reversedFile) => {
         console.log(reversedFile)
+        process.exit(0)
     })
     .catch((error: unknown) => {
         console.error(error)
+        process.exit(1)
     })
 ```
 
@@ -46,6 +48,7 @@ readFileAndReverse()
         process.exit(0)
     })
     .peekLeft((error) => {
+        // ^--- typed as Error
         console.error(error)
         process.exit(1)
     })
