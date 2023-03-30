@@ -51,6 +51,20 @@ export class TaskResult<S = never, F = never>
   }
 
   /**
+   * Runs the tasks sequentially
+   */
+  static fold = <S, F>(
+    tasks: TaskResult<S, F>[]
+  ): TaskResult<readonly S[], F> => {
+    const first = tasks.shift();
+    return tasks.reduce(
+      (prev, it) => prev.flatMap((all) => it.map((res) => [...all, res])),
+      first!.map((res) => [res])
+    );
+  };
+
+
+  /**
    * Use to transform the success value inside the `TaskResult`
    */
   map<S2 = never>(map: (success: S) => S2): TaskResult<S2, F> {
