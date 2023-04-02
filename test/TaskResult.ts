@@ -134,6 +134,20 @@ describe("instance", () => {
     });
   });
 
+  describe("fold", () => {
+    it("should transform a success and failure", async () => {
+      const out = await TaskResult.success(1).fold(
+        () => TaskResult.success("hello" as const),
+        (err) =>
+          err instanceof Failed
+            ? TaskResult.success("waa" as const)
+            : TaskResult.failure("oh-no" as const)
+      );
+
+      expect(out).toStrictEqual(Result.success(true));
+    });
+  });
+
   describe("mapFailure", () => {
     it("should transform a failure", async () => {
       class BooError {

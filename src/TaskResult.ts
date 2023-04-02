@@ -1,7 +1,9 @@
 import { Result } from "./Result";
 import { Failure, ResultValue, Success } from "./ResultValue";
 
-type TaskMaybe<S, F> = () => Promise<ResultValue<S, F>>;
+type Task<A> = () => Promise<A>;
+
+type TaskMaybe<S, F> = Task<ResultValue<S, F>>;
 
 export class TaskResult<S = never, F = never>
   implements PromiseLike<Result<S, F>>
@@ -127,6 +129,22 @@ export class TaskResult<S = never, F = never>
     return new TaskResult(() =>
       this.taskMaybe().then((maybe) =>
         maybe.isFailure() ? new Failure(map(maybe.value)) : maybe
+      )
+    );
+  }
+
+  /**
+   * Use to transform both the success and failure values inside the `TaskResult`
+   */
+  fold<S2, F2>(
+    onSuccess: (success: S) => TaskResult<S2, F2>,
+    onFailure: (failure: F) => TaskResult<S2, F2>
+  ): TaskResult<S2, F2> {
+    return new TaskResult<S2, F2>(() =>
+      this.taskMaybe().then((maybe) =>
+        maybe.isSuccess()
+          ? onSuccess(maybe.value).taskMaybe()
+          : onFailure(maybe.value).taskMaybe()
       )
     );
   }
