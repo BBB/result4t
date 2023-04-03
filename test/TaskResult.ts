@@ -144,7 +144,7 @@ describe("instance", () => {
             : TaskResult.failure("oh-no" as const)
       );
 
-      expect(out).toStrictEqual(Result.success(true));
+      expect(out).toStrictEqual(Result.success("hello"));
     });
   });
 
