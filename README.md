@@ -51,5 +51,5 @@ readFileAndReverse()
         // ^--- typed as Error
         console.error(error)
         process.exit(1)
-    })
+    }).run()
 ```
