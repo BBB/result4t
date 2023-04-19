@@ -64,15 +64,15 @@ describe("mapFailure", () => {
 describe("fold", () => {
   it("should transform a failure", () => {
     const result = Result.failure<number, string>("failure").fold(
-      toString,
-      reverseString
+      reverseString,
+      toString
     );
     expect(result).toEqual("eruliaf");
   });
   it("should transform a success", () => {
     const result = Result.success<string, number>("success").fold(
-      reverseString,
-      toString
+      toString,
+      reverseString
     );
     expect(result).toEqual("sseccus");
   });

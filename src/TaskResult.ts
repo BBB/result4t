@@ -1,8 +1,9 @@
-import { Failure, Result, Results, Success } from "./Result";
+import { Result } from "./Result";
+import { Failure, ResultValue, Success } from "./ResultValue";
 
 type Task<A> = () => Promise<A>;
 
-type TaskMaybe<S, F> = Task<Results<S, F>>;
+type TaskMaybe<S, F> = Task<ResultValue<S, F>>;
 
 export class TaskResult<S = never, F = never>
   implements PromiseLike<Result<S, F>>
@@ -14,9 +15,7 @@ export class TaskResult<S = never, F = never>
    * @param result
    */
   static success<S, F>(result: S) {
-    return new TaskResult<S, F>(() =>
-      Promise.resolve(Result.success<S, F>(result))
-    );
+    return new TaskResult<S, F>(() => Promise.resolve(new Success(result)));
   }
 
   /**
@@ -24,15 +23,13 @@ export class TaskResult<S = never, F = never>
    * @param result
    */
   static failure<S, F>(result: F) {
-    return new TaskResult<S, F>(() =>
-      Promise.resolve(Result.failure<S, F>(result))
-    );
+    return new TaskResult<S, F>(() => Promise.resolve(new Failure(result)));
   }
 
   /**
    * Upgrades a `Result` to a `TaskResult`
    */
-  static fromResult<S, F>(result: Results<S, F>) {
+  static fromResult<S, F>(result: Result<S, F>) {
     return new TaskResult<S, F>(async () =>
       result.isSuccess()
         ? new Success(result.get())
@@ -99,7 +96,7 @@ export class TaskResult<S = never, F = never>
    * returns an array of the Success
    */
   static map = <S, F>(tasks: TaskResult<S, F>[]): TaskResult<S[], F> => {
-    return TaskResult.fromPromise<Results<S, F>[], F>(
+    return TaskResult.fromPromise<ResultValue<S, F>[], F>(
       () => Promise.all(tasks.map((t) => t.run())),
       (e) => {
         throw e;
@@ -119,11 +116,8 @@ export class TaskResult<S = never, F = never>
    */
   map<S2 = never>(map: (success: S) => S2): TaskResult<S2, F> {
     return new TaskResult(() =>
-      this.taskMaybe().then(
-        (maybe): Results<S2, F> =>
-          maybe.isSuccess()
-            ? new Success(map(maybe.value))
-            : new Failure(maybe.value)
+      this.taskMaybe().then((maybe) =>
+        maybe.isSuccess() ? new Success(map(maybe.value)) : maybe
       )
     );
   }
@@ -133,11 +127,8 @@ export class TaskResult<S = never, F = never>
    */
   mapFailure<F2 = never>(map: (failure: F) => F2): TaskResult<S, F2> {
     return new TaskResult(() =>
-      this.taskMaybe().then(
-        (maybe): Results<S, F2> =>
-          maybe.isFailure()
-            ? new Failure(map(maybe.value))
-            : new Success(maybe.value)
+      this.taskMaybe().then((maybe) =>
+        maybe.isFailure() ? new Failure(map(maybe.value)) : maybe
       )
     );
   }
@@ -191,11 +182,11 @@ export class TaskResult<S = never, F = never>
    */
   flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
     return new TaskResult<S2, F>(() =>
-      this.taskMaybe().then((inner): Promise<Results<S2, F>> => {
+      this.taskMaybe().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
         }
-        return Promise.resolve(Result.failure(inner.value));
+        return inner;
       })
     );
   }
@@ -205,11 +196,11 @@ export class TaskResult<S = never, F = never>
    */
   flatMapFailure<F2>(param: (failure: F) => TaskResult<S, F2>) {
     return new TaskResult<S, F2>(() =>
-      this.taskMaybe().then((inner): Promise<Results<S, F2>> => {
+      this.taskMaybe().then((inner) => {
         if (inner.isFailure()) {
           return param(inner.value).run();
         }
-        return Promise.resolve(Result.success(inner.value));
+        return inner;
       })
     );
   }
@@ -249,7 +240,7 @@ export class TaskResult<S = never, F = never>
   }
 }
 
-function toResult<S, F>(maybe: Results<S, F>) {
+function toResult<S, F>(maybe: ResultValue<S, F>) {
   return maybe.isSuccess()
     ? Result.success<S, F>(maybe.value)
     : Result.failure<S, F>(maybe.value);
