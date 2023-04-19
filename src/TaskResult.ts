@@ -8,7 +8,7 @@ type TaskMaybe<S, F> = Task<ResultValue<S, F>>;
 export class TaskResult<S = never, F = never>
   implements PromiseLike<Result<S, F>>
 {
-  constructor(private taskMaybe: TaskMaybe<S, F>) {}
+  constructor(private value: TaskMaybe<S, F>) {}
 
   /**
    * Creates a new instance of a successful `TaskResult` based on the value
@@ -116,7 +116,7 @@ export class TaskResult<S = never, F = never>
    */
   map<S2 = never>(map: (success: S) => S2): TaskResult<S2, F> {
     return new TaskResult(() =>
-      this.taskMaybe().then((maybe) =>
+      this.value().then((maybe) =>
         maybe.isSuccess() ? new Success(map(maybe.value)) : maybe
       )
     );
@@ -127,7 +127,7 @@ export class TaskResult<S = never, F = never>
    */
   mapFailure<F2 = never>(map: (failure: F) => F2): TaskResult<S, F2> {
     return new TaskResult(() =>
-      this.taskMaybe().then((maybe) =>
+      this.value().then((maybe) =>
         maybe.isFailure() ? new Failure(map(maybe.value)) : maybe
       )
     );
@@ -141,10 +141,10 @@ export class TaskResult<S = never, F = never>
     onFailure: (failure: F) => TaskResult<S2, F2>
   ): TaskResult<S2, F2> {
     return new TaskResult<S2, F2>(() =>
-      this.taskMaybe().then((maybe) =>
+      this.value().then((maybe) =>
         maybe.isSuccess()
-          ? onSuccess(maybe.value).taskMaybe()
-          : onFailure(maybe.value).taskMaybe()
+          ? onSuccess(maybe.value).value()
+          : onFailure(maybe.value).value()
       )
     );
   }
@@ -154,7 +154,7 @@ export class TaskResult<S = never, F = never>
    */
   peek(peekSuccess: (success: S) => void): TaskResult<S, F> {
     return new TaskResult(() =>
-      this.taskMaybe().then((maybe) => {
+      this.value().then((maybe) => {
         if (maybe.isSuccess()) {
           peekSuccess(maybe.value);
         }
@@ -168,7 +168,7 @@ export class TaskResult<S = never, F = never>
    */
   peekFailure(peekFailure: (failure: F) => void): TaskResult<S, F> {
     return new TaskResult(() =>
-      this.taskMaybe().then((maybe) => {
+      this.value().then((maybe) => {
         if (maybe.isFailure()) {
           peekFailure(maybe.value);
         }
@@ -182,7 +182,7 @@ export class TaskResult<S = never, F = never>
    */
   flatMap<S2>(param: (success: S) => TaskResult<S2, F>) {
     return new TaskResult<S2, F>(() =>
-      this.taskMaybe().then((inner) => {
+      this.value().then((inner) => {
         if (inner.isSuccess()) {
           return param(inner.value).run();
         }
@@ -196,7 +196,7 @@ export class TaskResult<S = never, F = never>
    */
   flatMapFailure<F2>(param: (failure: F) => TaskResult<S, F2>) {
     return new TaskResult<S, F2>(() =>
-      this.taskMaybe().then((inner) => {
+      this.value().then((inner) => {
         if (inner.isFailure()) {
           return param(inner.value).run();
         }
@@ -209,7 +209,7 @@ export class TaskResult<S = never, F = never>
    * Execute the computation
    */
   run() {
-    return this.taskMaybe();
+    return this.value();
   }
 
   /**
