@@ -1,4 +1,3 @@
 export { Option, optional, None, Some } from "./Option";
-export { Result } from "./Result";
-export { Success, Failure } from "./ResultValue";
+export { Result, Success, Failure } from "./Result";
 export { TaskResult } from "./TaskResult";
