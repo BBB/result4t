@@ -13,6 +13,16 @@ describe("success", () => {
     const result = Result.success("success");
     expect(result.isSuccess()).toStrictEqual(true);
   });
+  it("should filter out failure", () => {
+    const result = Result.success<"success", "failure">("success");
+    if (result.isSuccess()) {
+      const str: "success" = result.get();
+      expect(str).toStrictEqual("success");
+      return;
+    }
+    const error: "failure" = result.get();
+    expect(error).toStrictEqual("failure");
+  });
 });
 
 describe("failure", () => {
@@ -23,6 +33,16 @@ describe("failure", () => {
   it("will be failure", () => {
     const result = Result.failure("failure");
     expect(result.isFailure()).toStrictEqual(true);
+  });
+  it("should filter out success", () => {
+    const result = Result.failure<"success", "failure">("failure");
+    if (result.isSuccess()) {
+      const str: "success" = result.get();
+      expect(str).toStrictEqual("success");
+      return;
+    }
+    const error: "failure" = result.get();
+    expect(error).toStrictEqual("failure");
   });
 });
 

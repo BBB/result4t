@@ -1,55 +1,77 @@
-import { Failure, ResultValue, Success } from "./ResultValue";
+export type Result<S, F> = Success<S> | Failure<F>;
 
-export class Result<S, F> {
-  constructor(private readonly value: ResultValue<S, F>) {}
-
-  static success<S2, F2>(success: S2) {
-    return new Result<S2, F2>(new Success(success));
+export class Success<S> {
+  constructor(private readonly value: S) {}
+  isSuccess(): this is Success<S> {
+    return true;
+  }
+  isFailure(): this is Failure<any> {
+    return false;
   }
 
-  static failure<S2, F2>(failure: F2) {
-    return new Result<S2, F2>(new Failure(failure));
+  map<SIn, S2 = never>(map: (success: S) => S2): Result<S2, any> {
+    return Result.success(map(this.get()));
   }
 
-  public isSuccess(): this is Result<S, never> {
-    return this.value.isSuccess();
+  flatMap<F, S2 = never>(map: (success: S) => Result<S2, any>): Result<S2, F> {
+    return map(this.get());
   }
 
-  public isFailure(): this is Result<never, F> {
-    return !this.value.isSuccess();
+  get(): S {
+    return this.value;
+  }
+  mapFailure<F, F2 = never>(map: (failure: F) => F2): Result<S, F2> {
+    return this;
   }
 
-  map<S2 = never>(map: (success: S) => S2): Result<S2, F> {
-    return this.value.isSuccess()
-      ? Result.success(map(this.value.value))
-      : Result.failure(this.value.value);
+  fold<F, Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
+    return onSuccess(this.get());
   }
 
-  flatMap<S2 = never>(map: (success: S) => Result<S2, F>): Result<S2, F> {
-    return this.value.isSuccess()
-      ? map(this.value.value)
-      : Result.failure(this.value.value);
-  }
-
-  mapFailure<F2 = never>(map: (failure: F) => F2): Result<S, F2> {
-    return this.value.isFailure()
-      ? Result.failure(map(this.value.value))
-      : Result.success(this.value.value);
-  }
-
-  fold<Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
-    return this.value.isFailure()
-      ? onFailure(this.value.value)
-      : onSuccess(this.value.value);
-  }
-
-  getOrElse<Out>(onFailure: (failure: F) => Out) {
-    return this.value.isFailure()
-      ? onFailure(this.value.value)
-      : this.value.value;
-  }
-
-  get() {
-    return this.value.value;
+  getOrElse<F, Out>(onFailure: (failure: F) => Out) {
+    return this.get();
   }
 }
+export class Failure<F> {
+  constructor(public value: F) {}
+  isSuccess(): this is Success<any> {
+    return false;
+  }
+  isFailure(): this is Failure<F> {
+    return true;
+  }
+
+  get(): F {
+    return this.value;
+  }
+
+  map<S, S2 = never>(map: (success: S) => S2): Result<S2, F> {
+    return this;
+  }
+
+  flatMap<FIn, S2 = never>(
+    map: (success: any) => Result<S2, F>
+  ): Result<S2, F> {
+    return this;
+  }
+
+  mapFailure<S, F2 = never>(map: (failure: F) => F2): Result<S, F2> {
+    return Result.failure(map(this.value));
+  }
+  fold<S, Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
+    return onFailure(this.get());
+  }
+
+  getOrElse<FIn, Out>(onFailure: (failure: F) => Out) {
+    return onFailure(this.value);
+  }
+}
+
+export const Result = {
+  success<S, F>(s: S): Result<S, F> {
+    return new Success(s);
+  },
+  failure<S, F>(f: F): Result<S, F> {
+    return new Failure(f);
+  },
+};
