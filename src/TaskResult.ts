@@ -1,4 +1,4 @@
-import { Result } from "./Result";
+import { Failure, Result, Success } from "./Result";
 
 type Task<A> = () => Promise<A>;
 
@@ -115,8 +115,11 @@ export class TaskResult<S = never, F = never>
    */
   map<S2 = never>(map: (success: S) => S2): TaskResult<S2, F> {
     return new TaskResult(() =>
-      this.value().then((value) =>
-        value.isSuccess() ? Result.success(map(value.get())) : value
+      this.value().then(
+        (value): Result<S2, F> =>
+          value.isSuccess()
+            ? Result.success<S2, F>(map(value.get()))
+            : (value as any as Failure<S2, F>)
       )
     );
   }
@@ -127,7 +130,9 @@ export class TaskResult<S = never, F = never>
   mapFailure<F2 = never>(map: (failure: F) => F2): TaskResult<S, F2> {
     return new TaskResult(() =>
       this.value().then((value) =>
-        value.isFailure() ? Result.failure(map(value.value)) : value
+        value.isFailure()
+          ? Result.failure(map(value.value))
+          : (value as any as Success<S, F2>)
       )
     );
   }
@@ -185,7 +190,7 @@ export class TaskResult<S = never, F = never>
         if (value.isSuccess()) {
           return param(value.get()).run();
         }
-        return value;
+        return value as any as Failure<S2, F>;
       })
     );
   }
@@ -199,7 +204,7 @@ export class TaskResult<S = never, F = never>
         if (inner.isFailure()) {
           return param(inner.value).run();
         }
-        return inner;
+        return inner as any as Success<S, F2>;
       })
     );
   }
