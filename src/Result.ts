@@ -13,7 +13,7 @@ interface ResultBase<S, F> {
 
   flatMapFailure<F2 = never>(map: (failure: F) => Result<S, F2>): Result<S, F2>;
 
-  fold<F, Out>(
+  fold<Out>(
     onSuccess: (success: S) => Out,
     onFailure: (failure: F) => Out
   ): Out;
@@ -53,11 +53,11 @@ export class Success<S, F> implements ResultBase<S, F> {
     return this;
   }
 
-  fold<F, Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
+  fold<Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
     return onSuccess(this.get());
   }
 
-  getOrElse<F, Out>(onFailure: (failure: F) => Out) {
+  getOrElse<Out>(onFailure: (failure: F) => Out) {
     return this.get();
   }
 }
@@ -74,7 +74,7 @@ export class Failure<S, F> {
     return this.value;
   }
 
-  map<S, S2 = never>(map: (success: S) => S2): Result<any, F> {
+  map<S2 = never>(map: (success: S) => S2): Result<any, F> {
     return this;
   }
 
