@@ -37,7 +37,7 @@ export class Result<S, F> {
       : Result.success(this.maybe.value);
   }
 
-  fold<Out>(onFailure: (failure: F) => Out, onSuccess: (success: S) => Out) {
+  fold<Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
     return this.maybe.isFailure()
       ? onFailure(this.maybe.value)
       : onSuccess(this.maybe.value);
