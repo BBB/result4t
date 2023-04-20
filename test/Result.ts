@@ -4,6 +4,25 @@ import { Result } from "../src/Result";
 const reverseString = (a: string) => a.split("").reverse().join("");
 const toString = <T extends { toString(): string }>(a: T) => a.toString();
 
+describe("misc", () => {
+  it("can change both sides in a flatMap when Failure share interface", () => {
+    interface Failed {
+      name: string;
+    }
+    class FailedTwo implements Failed {
+      name = "FailedTwo" as string;
+    }
+
+    function getSuccess() {
+      return Result.success<string, Failed>("success");
+    }
+
+    const result = getSuccess().flatMap((v) => {
+      return Result.success<number, FailedTwo>(3);
+    });
+    expect(result).toStrictEqual(Result.success("success"));
+  });
+});
 describe("success", () => {
   it("should contain a value", () => {
     const result = Result.success("success");

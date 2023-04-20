@@ -43,24 +43,28 @@ export class Success<S, F> implements ResultBase<S, F> {
   get(): S {
     return this.value;
   }
-  mapFailure<F2 = never>(map: (failure: F) => F2): Result<S, any> {
-    return this;
+  mapFailure<F2 = never>(map: (failure: F) => F2): Result<S, F2> {
+    return new Success<S, F2>(this.value);
   }
 
   flatMapFailure<F2 = never>(
     map: (failure: F) => Result<S, F2>
-  ): Result<S, any> {
-    return this;
+  ): Result<S, F2> {
+    return new Success<S, F2>(this.value);
   }
 
-  fold<Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
+  fold<Out>(
+    onSuccess: (success: S) => Out,
+    onFailure: (failure: F) => Out
+  ): Out {
     return onSuccess(this.get());
   }
 
-  getOrElse<Out>(onFailure: (failure: F) => Out) {
+  getOrElse<Out>(onFailure: (failure: F) => Out): S {
     return this.get();
   }
 }
+
 export class Failure<S, F> {
   constructor(public value: F) {}
   isSuccess(): this is Success<S, F> {
@@ -74,12 +78,12 @@ export class Failure<S, F> {
     return this.value;
   }
 
-  map<S2 = never>(map: (success: S) => S2): Result<any, F> {
-    return this;
+  map<S2 = never>(map: (success: S) => S2): Result<S2, F> {
+    return new Failure<S2, F>(this.value);
   }
 
-  flatMap<S2 = never>(map: (success: any) => Result<S2, F>): Result<any, F> {
-    return this;
+  flatMap<S2 = never>(map: (success: any) => Result<S2, F>): Result<S2, F> {
+    return new Failure<S2, F>(this.value);
   }
 
   mapFailure<F2 = never>(map: (failure: F) => F2): Result<S, F2> {
@@ -91,6 +95,7 @@ export class Failure<S, F> {
   ): Result<S, F2> {
     return map(this.get());
   }
+
   fold<Out>(onSuccess: (success: S) => Out, onFailure: (failure: F) => Out) {
     return onFailure(this.get());
   }
