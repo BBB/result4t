@@ -20,7 +20,7 @@ describe("misc", () => {
     const result = getSuccess().flatMap((v) => {
       return Result.success<number, FailedTwo>(3);
     });
-    expect(result).toStrictEqual(Result.success("success"));
+    expect(result).toStrictEqual(Result.success(3));
   });
 });
 describe("success", () => {
