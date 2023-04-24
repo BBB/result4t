@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import utils from "node:util";
-import { Result } from "../src/Result";
+import { Failure, Result, Success } from "../src/Result";
 import { TaskResult } from "../src/TaskResult";
 
 class Failed {}
@@ -131,6 +131,18 @@ describe("instance", () => {
         .map(() => true);
 
       expect(out).toStrictEqual(Result.success(true));
+    });
+
+    it("always responds with a Result", async () => {
+      const resultSuccess = await TaskResult.success(1)
+        .map(() => {})
+        .run();
+      const resultFailure = await TaskResult.failure(1)
+        .map(() => {})
+        .run();
+
+      expect(resultSuccess).toBeInstanceOf(Success);
+      expect(resultFailure).toBeInstanceOf(Failure);
     });
   });
 
