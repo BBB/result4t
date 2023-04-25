@@ -5,6 +5,16 @@ const reverseString = (a: string) => a.split("").reverse().join("");
 const toString = <T extends { toString(): string }>(a: T) => a.toString();
 
 describe("misc", () => {
+  it("can mapFailure before a map", () => {
+    const result = Result.success<"one" | "two", Error>("one")
+      .mapFailure((_) => false)
+      .flatMap((s) => {
+        return Result.failure(true);
+      })
+      .map((_) => {});
+
+    expect(result).toStrictEqual(Result.failure(true));
+  });
   it("can change both sides in a flatMap when Failure share interface", () => {
     interface Failed {
       name: string;
