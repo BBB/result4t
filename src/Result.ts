@@ -3,9 +3,9 @@ interface ResultBase<S, F> {
 
   isFailure(): boolean;
 
-  map<S2 = never>(map: (success: S) => S2): Result<S2, any>;
+  map<S2 = never>(map: (success: S) => S2): Result<S2, F>;
 
-  flatMap<S2 = never>(map: (success: S) => Result<S2, any>): Result<S2, F>;
+  flatMap<S2 = never>(map: (success: S) => Result<S2, F>): Result<S2, F>;
 
   get(): S | F;
 
@@ -82,7 +82,7 @@ export class Failure<S, F> {
     return new Failure<S2, F>(this.value);
   }
 
-  flatMap<S2 = never>(map: (success: any) => Result<S2, F>): Result<S2, F> {
+  flatMap<S2 = never>(map: (success: S) => Result<S2, F>): Result<S2, F> {
     return new Failure<S2, F>(this.value);
   }
 
