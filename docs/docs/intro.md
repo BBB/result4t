@@ -1,7 +1,6 @@
 ---
 id: intro
 title: Quick setup guide
-slug: /
 tags:
   - Guide
   - First launch
