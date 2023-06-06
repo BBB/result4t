@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkresult_4_t=self.webpackChunkresult_4_t||[]).push([[237],{9037:(e,t,l)=>{l.r(t),l.d(t,{default:()=>r});var i=l(9496),n=l(8271);function r(){return i.createElement(n.Z,{title:"Hello",description:"Description will go into a meta tag in <head />"})}}}]);
