@@ -19,6 +19,8 @@ interface ResultBase<S, F> {
   ): Out;
 
   getOrElse<Out>(onFailure: (failure: F) => Out): S | Out;
+  peek(peekSuccess: (success: S) => void): ResultBase<S, F>;
+  peekFailure(peekFailure: (failure: F) => void): ResultBase<S, F>;
 }
 
 export type Result<S, F> = Success<S, F> | Failure<S, F>;
@@ -63,9 +65,18 @@ export class Success<S, F> implements ResultBase<S, F> {
   getOrElse<Out>(onFailure: (failure: F) => Out): S {
     return this.get();
   }
+
+  peek(peekSuccess: (success: S) => void): ResultBase<S, F> {
+    peekSuccess(this.value);
+    return this;
+  }
+
+  peekFailure(peekFailure: (failure: F) => void): ResultBase<S, F> {
+    return this;
+  }
 }
 
-export class Failure<S, F> {
+export class Failure<S, F> implements ResultBase<S, F> {
   constructor(public value: F) {}
   isSuccess(): this is Success<S, F> {
     return false;
@@ -102,6 +113,15 @@ export class Failure<S, F> {
 
   getOrElse<Out>(onFailure: (failure: F) => Out) {
     return onFailure(this.value);
+  }
+
+  peek(peekSuccess: (success: S) => void): ResultBase<S, F> {
+    return this;
+  }
+
+  peekFailure(peekFailure: (failure: F) => void): ResultBase<S, F> {
+    peekFailure(this.value);
+    return this;
   }
 }
 
