@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Result } from "../src/Result";
+import { Result } from "../src/Result.js";
 
 const reverseString = (a: string) => a.split("").reverse().join("");
 const toString = <T extends { toString(): string }>(a: T) => a.toString();
@@ -78,7 +78,7 @@ describe("failure", () => {
 describe("flatMap", () => {
   it("should contain a value", () => {
     const result = Result.success("failure").flatMap(() =>
-      Result.failure("oh no")
+      Result.failure("oh no"),
     );
     expect(result).toStrictEqual(Result.failure("oh no"));
   });
@@ -98,13 +98,13 @@ describe("map", () => {
 describe("mapFailure", () => {
   it("should transform a failure", () => {
     const result = Result.failure<string, string>("failure").mapFailure(
-      reverseString
+      reverseString,
     );
     expect(result).toStrictEqual(Result.failure("eruliaf"));
   });
   it("should not transform a success", () => {
     const result = Result.success<string, string>("success").mapFailure(
-      reverseString
+      reverseString,
     );
     expect(result).toStrictEqual(Result.success("success"));
   });
@@ -114,14 +114,14 @@ describe("fold", () => {
   it("should transform a failure", () => {
     const result = Result.failure<number, string>("failure").fold(
       toString,
-      reverseString
+      reverseString,
     );
     expect(result).toEqual("eruliaf");
   });
   it("should transform a success", () => {
     const result = Result.success<string, number>("success").fold(
       reverseString,
-      toString
+      toString,
     );
     expect(result).toEqual("sseccus");
   });
@@ -131,13 +131,13 @@ describe("getOrElse", () => {
   it("should transform a failure", () => {
     const error = new Error("Oops");
     const result = Result.failure<number, string>("failure").getOrElse(
-      () => error
+      () => error,
     );
     expect(result).toEqual(error);
   });
   it("should return a success", () => {
     const result = Result.success<string, number>("success").getOrElse(
-      () => new Error("Oops")
+      () => new Error("Oops"),
     );
     expect(result).toEqual("success");
   });

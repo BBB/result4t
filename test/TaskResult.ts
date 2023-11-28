@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import utils from "node:util";
-import { Failure, Result, Success } from "../src/Result";
-import { TaskResult } from "../src/TaskResult";
+import { Failure, Result, Success } from "../src/Result.js";
+import { TaskResult } from "../src/TaskResult.js";
 
 class Failed {}
 
 const sleep = (ms: number) =>
   TaskResult.fromPromise(
     () => utils.promisify(setTimeout)(ms),
-    () => new Error("never")
+    () => new Error("never"),
   );
 
 describe("static", () => {
@@ -44,7 +44,7 @@ describe("static", () => {
     it("will convert the Promise<T> to a TaskResult<T>", async () => {
       const out = await TaskResult.fromPromise(
         () => Promise.resolve(1),
-        (err) => new Failed()
+        (err) => new Failed(),
       ).map((int) => int + 1);
 
       expect(out).toStrictEqual(Result.success(2));
@@ -53,7 +53,7 @@ describe("static", () => {
     it("will convert the error to TaskResult<never,E>", async () => {
       const out = await TaskResult.fromPromise(
         () => Promise.reject(1),
-        (err) => new Failed()
+        (err) => new Failed(),
       ).map((int) => int + 1);
 
       expect(out).toStrictEqual(Result.failure(new Failed()));
@@ -153,7 +153,7 @@ describe("instance", () => {
         (err) =>
           err instanceof Failed
             ? TaskResult.success("waa" as const)
-            : TaskResult.failure("oh-no" as const)
+            : TaskResult.failure("oh-no" as const),
       );
 
       expect(out).toStrictEqual(Result.success("hello"));
@@ -167,7 +167,7 @@ describe("instance", () => {
       }
       const booError = new BooError();
       const out = await TaskResult.failure(new Error("Boo")).mapFailure(
-        () => booError
+        () => booError,
       );
 
       expect(out).toStrictEqual(Result.failure(booError));
@@ -181,7 +181,7 @@ describe("instance", () => {
       }
       const booError = new BooError();
       const out = await TaskResult.failure(new Error("Boo")).mapFailure(
-        () => booError
+        () => booError,
       );
 
       expect(out).toStrictEqual(Result.failure(booError));
@@ -189,7 +189,7 @@ describe("instance", () => {
 
     it("should pass a Result to a then", async () => {
       const out = await TaskResult.success(true).then((a) =>
-        a.getOrElse(() => "woo")
+        a.getOrElse(() => "woo"),
       );
       expect(out).toStrictEqual(true);
     });
