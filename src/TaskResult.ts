@@ -1,4 +1,4 @@
-import { Failure, Result, Success } from "./Result";
+import { Failure, Result, Success } from "./Result.js";
 
 type Task<A> = () => Promise<A>;
 
@@ -32,7 +32,7 @@ export class TaskResult<S = never, F = never>
     return new TaskResult<S, F>(async () =>
       result.isSuccess()
         ? Result.success(result.get())
-        : Result.failure(result.get())
+        : Result.failure(result.get()),
     );
   }
 
@@ -41,13 +41,13 @@ export class TaskResult<S = never, F = never>
    */
   static fromPromise<S, F>(
     run: () => Promise<S>,
-    mapError: (err: unknown) => F
+    mapError: (err: unknown) => F,
   ) {
     return new TaskResult<S, F>(() =>
       run().then(
         (s) => Result.success(s),
-        (err) => Result.failure(mapError(err))
-      )
+        (err) => Result.failure(mapError(err)),
+      ),
     );
   }
 
@@ -56,7 +56,7 @@ export class TaskResult<S = never, F = never>
    */
   static fromNullable<S, F>(
     value: S | undefined | null,
-    rejection: F
+    rejection: F,
   ): TaskResult<S, F> {
     return value ? TaskResult.success(value) : TaskResult.failure(rejection);
   }
@@ -65,12 +65,12 @@ export class TaskResult<S = never, F = never>
    * Runs the tasks sequentially
    */
   static fold = <S, F>(
-    tasks: TaskResult<S, F>[]
+    tasks: TaskResult<S, F>[],
   ): TaskResult<readonly S[], F> => {
     const first = tasks.shift();
     return tasks.reduce(
       (prev, it) => prev.flatMap((all) => it.map((res) => [...all, res])),
-      first!.map((res) => [res])
+      first!.map((res) => [res]),
     );
   };
 
@@ -79,13 +79,13 @@ export class TaskResult<S = never, F = never>
    */
   static foldChunks = <S, F>(
     size: number,
-    tasks: TaskResult<S, F>[]
+    tasks: TaskResult<S, F>[],
   ): TaskResult<readonly S[], F> => {
     const split = chunksOf(size);
     return split(tasks).reduce(
       (prev, it) =>
         prev.flatMap((r1) => TaskResult.map(it).map((r2) => r1.concat(r2))),
-      TaskResult.success<S[], F>([])
+      TaskResult.success<S[], F>([]),
     );
   };
 
@@ -99,13 +99,13 @@ export class TaskResult<S = never, F = never>
       () => Promise.all(tasks.map((t) => t.run())),
       (e) => {
         throw e;
-      }
+      },
     ).flatMap((v) => {
       if (v.every((it) => it.isSuccess())) {
         return TaskResult.success<S[], F>(v.map((it) => it.get()) as S[]);
       }
       return TaskResult.failure<S[], F>(
-        v.find((it) => it.isFailure())!.get() as F
+        v.find((it) => it.isFailure())!.get() as F,
       );
     });
   };
@@ -119,8 +119,8 @@ export class TaskResult<S = never, F = never>
         (value): Result<S2, F> =>
           value.isSuccess()
             ? Result.success<S2, F>(map(value.get()))
-            : (value as any as Failure<S2, F>)
-      )
+            : (value as any as Failure<S2, F>),
+      ),
     );
   }
 
@@ -132,8 +132,8 @@ export class TaskResult<S = never, F = never>
       this.value().then((value) =>
         value.isFailure()
           ? Result.failure(map(value.value))
-          : (value as any as Success<S, F2>)
-      )
+          : (value as any as Success<S, F2>),
+      ),
     );
   }
 
@@ -142,14 +142,14 @@ export class TaskResult<S = never, F = never>
    */
   fold<S2, F2>(
     onSuccess: (success: S) => TaskResult<S2, F2>,
-    onFailure: (failure: F) => TaskResult<S2, F2>
+    onFailure: (failure: F) => TaskResult<S2, F2>,
   ): TaskResult<S2, F2> {
     return new TaskResult<S2, F2>(() =>
       this.value().then((value) =>
         value.isSuccess()
           ? onSuccess(value.get()).value()
-          : onFailure(value.get()).value()
-      )
+          : onFailure(value.get()).value(),
+      ),
     );
   }
 
@@ -163,7 +163,7 @@ export class TaskResult<S = never, F = never>
           peekSuccess(value.get());
         }
         return value;
-      })
+      }),
     );
   }
 
@@ -177,7 +177,7 @@ export class TaskResult<S = never, F = never>
           peekFailure(value.get());
         }
         return value;
-      })
+      }),
     );
   }
 
@@ -191,7 +191,7 @@ export class TaskResult<S = never, F = never>
           return param(value.get()).run();
         }
         return value as any as Failure<S2, F>;
-      })
+      }),
     );
   }
 
@@ -205,7 +205,7 @@ export class TaskResult<S = never, F = never>
           return param(inner.value).run();
         }
         return inner as any as Success<S, F2>;
-      })
+      }),
     );
   }
 
@@ -235,11 +235,11 @@ export class TaskResult<S = never, F = never>
       | ((value: Result<S, F>) => PromiseLike<Out1> | Out1)
       | undefined
       | null,
-    onrejected?: ((reason: any) => PromiseLike<Out2> | Out2) | undefined | null
+    onrejected?: ((reason: any) => PromiseLike<Out2> | Out2) | undefined | null,
   ): PromiseLike<Out1 | Out2> {
     return this.run().then(
       onfulfilled ? (inner) => onfulfilled(toResult(inner)) : onfulfilled,
-      onrejected ? (inner) => onrejected(toResult(inner)) : onrejected
+      onrejected ? (inner) => onrejected(toResult(inner)) : onrejected,
     );
   }
 }
@@ -252,15 +252,18 @@ function toResult<S, F>(maybe: Result<S, F>) {
 
 function chunksOf(size: number) {
   return <T>(inputArray: Array<T>) =>
-    inputArray.reduce((resultArray, item, index) => {
-      const chunkIndex = Math.floor(index / size);
+    inputArray.reduce(
+      (resultArray, item, index) => {
+        const chunkIndex = Math.floor(index / size);
 
-      if (!resultArray[chunkIndex]) {
-        resultArray[chunkIndex] = []; // start a new chunk
-      }
+        if (!resultArray[chunkIndex]) {
+          resultArray[chunkIndex] = []; // start a new chunk
+        }
 
-      resultArray[chunkIndex].push(item);
+        resultArray[chunkIndex].push(item);
 
-      return resultArray;
-    }, [] as Array<T[]>);
+        return resultArray;
+      },
+      [] as Array<T[]>,
+    );
 }

@@ -3,7 +3,17 @@
   "version": "0.3.0",
   "description": "",
   "main": "dist/index.js",
+  "type": "module",
+  "exports": {
+    "./*": {
+      "types": "./dist/types/*.d.ts",
+      "require": "./dist/cjs/*.js",
+      "import": "./dist/esm/*.js",
+      "default": "./dist/esm/*.js"
+    }
+  },
   "devDependencies": {
+    "@tsconfig/node20": "^20.1.2",
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
     "@types/node": "^18.0.0",
     "prettier": "^2.8.7",
@@ -13,7 +23,7 @@
   },
   "scripts": {
     "test": "pnpm vitest",
-    "build": "pnpm tsc -p tsconfig.build.json",
+    "build": "rm -rf ./dist || true && pnpm tsc -b ./tsconfig.build-cjs.json ./tsconfig.build-esm.json ./tsconfig.build-types.json",
     "format": "prettier --write ./",
     "publish-package": "echo \"$(jq --arg name \"${NAME_TO_PUBLISH:-@ollierelph/result4t}\" '.name|=$name' package.json)\" > package.json && pnpm publish --access public --no-git-checks"
   },

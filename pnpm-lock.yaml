@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@trivago/prettier-plugin-sort-imports': ^3.4.0
+  '@tsconfig/node20': ^20.1.2
   '@types/node': ^18.0.0
   prettier: ^2.8.7
   typescript: ^5.0.4
@@ -10,6 +11,7 @@ specifiers:
 
 devDependencies:
   '@trivago/prettier-plugin-sort-imports': 3.4.0_prettier@2.8.7
+  '@tsconfig/node20': 20.1.2
   '@types/node': 18.0.0
   prettier: 2.8.7
   typescript: 5.0.4
@@ -492,6 +494,10 @@ packages:
       prettier: 2.8.7
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /@tsconfig/node20/20.1.2:
+    resolution: {integrity: sha512-madaWq2k+LYMEhmcp0fs+OGaLFk0OenpHa4gmI4VEmCKX4PJntQ6fnnGADVFrVkBj0wIdAlQnK/MrlYTHsa1gQ==}
     dev: true
 
   /@types/chai-subset/1.3.3:
