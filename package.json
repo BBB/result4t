@@ -26,9 +26,6 @@
     "format": "prettier --write ./",
     "publish-package": "echo \"$(jq --arg name \"${NAME_TO_PUBLISH:-@ollierelph/result4t}\" '.name|=$name' package.json)\" > package.json && pnpm publish --access public --no-git-checks"
   },
-  "files": [
-    "./dist/*"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/BBB/result4t.git"
