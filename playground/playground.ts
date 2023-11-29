@@ -6,7 +6,10 @@ import { DocumentStore } from "./storage/DocumentStore";
 import { UserId } from "./lib/domain/UserId";
 
 class DocumentPrintingFailure extends NestedFailure {
-  constructor(public userId: UserId, inner: unknown) {
+  constructor(
+    public userId: UserId,
+    inner: unknown,
+  ) {
     super("Unable to print document", inner);
   }
 }
@@ -21,7 +24,7 @@ function main(userId: UserId): TaskResult<void, DocumentPrintingFailure> {
     .flatMap((file) =>
       printer
         .print(file)
-        .mapFailure((failure) => new DocumentPrintingFailure(userId, failure))
+        .mapFailure((failure) => new DocumentPrintingFailure(userId, failure)),
     );
 }
 

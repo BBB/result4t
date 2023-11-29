@@ -6,5 +6,5 @@ const needsPublish = (packageName, version) => {
 };
 
 needsPublish(process.argv[2], process.argv[3]).then((needs) =>
-  needs ? process.exit(0) : process.exit(1)
+  needs ? process.exit(0) : process.exit(1),
 );

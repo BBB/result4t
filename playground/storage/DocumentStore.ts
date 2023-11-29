@@ -14,7 +14,7 @@ export class DocumentStore {
       .mapFailure((failure) =>
         failure instanceof FileNotFound
           ? new NoInvoiceRecordFound(userId)
-          : failure
+          : failure,
       );
   }
 }

@@ -15,7 +15,11 @@ export const FileSystemFailure = {
 };
 
 export class UnknownSystemFailure extends NestedFailure {
-  constructor(action: string, public file: FilePath, inner: unknown) {
+  constructor(
+    action: string,
+    public file: FilePath,
+    inner: unknown,
+  ) {
     super(`Unable to ${action}`, inner);
   }
 }
@@ -29,7 +33,7 @@ export interface FileSystem {
 
   write(
     file: FilePath,
-    content: Buffer
+    content: Buffer,
   ): TaskResult<void, UnknownSystemFailure>;
 }
 

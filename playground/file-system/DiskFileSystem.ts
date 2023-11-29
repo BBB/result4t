@@ -10,14 +10,14 @@ export class DiskFileSystem implements FileSystem {
       (err) =>
         isError(err) && err.message.includes("File not found")
           ? FileSystemFailure.notFound(file)
-          : FileSystemFailure.unknownReadIssue(file, err)
+          : FileSystemFailure.unknownReadIssue(file, err),
     );
   }
 
   write(file: FilePath, content: Buffer) {
     return TaskResult.fromPromise(
       async () => fs.writeFile(file.toString(), content),
-      (err) => FileSystemFailure.unknownWriteIssue(file, err)
+      (err) => FileSystemFailure.unknownWriteIssue(file, err),
     );
   }
 }

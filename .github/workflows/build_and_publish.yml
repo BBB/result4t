@@ -5,13 +5,12 @@ name: Build and Publish
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,34 +19,34 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        registry-url: 'https://registry.npmjs.org'
-        scope: '@ollierelph'
-    - uses: pnpm/action-setup@v2.2.2
-      with:
-        version: 7
-        run_install: |
-          - recursive: true
-            args: [--frozen-lockfile, --strict-peer-dependencies]
-    - name: Test
-      run: pnpm test
-    - name: Build and Publish (if required)
-      run: |
-        pnpm build
-        if node bin/needs-publish.js "result4t" $(node -pe "require('./package.json').version") ; then
-          NAME_TO_PUBLISH=result4t pnpm run publish-package
-        else
-          echo "Result4t Version already published"
-        fi
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: "https://registry.npmjs.org"
+          scope: "@ollierelph"
+      - uses: pnpm/action-setup@v2.2.2
+        with:
+          version: 7
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile, --strict-peer-dependencies]
+      - name: Test
+        run: pnpm test
+      - name: Build and Publish (if required)
+        run: |
+          pnpm build
+          if node bin/needs-publish.js "result4t" $(node -pe "require('./package.json').version") ; then
+            NAME_TO_PUBLISH=result4t pnpm run publish-package
+          else
+            echo "Result4t Version already published"
+          fi
 
-        if node bin/needs-publish.js "@ollierelph/result4t" $(node -pe "require('./package.json').version") ; then
-          NAME_TO_PUBLISH="@ollierelph/result4t" pnpm run publish-package
-        else
-          echo "ollierelph/result4t Version already published"
-        fi
-      env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          if node bin/needs-publish.js "@ollierelph/result4t" $(node -pe "require('./package.json').version") ; then
+            NAME_TO_PUBLISH="@ollierelph/result4t" pnpm run publish-package
+          else
+            echo "ollierelph/result4t Version already published"
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
