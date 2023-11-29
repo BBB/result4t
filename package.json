@@ -1,18 +1,30 @@
 {
   "name": "@ollierelph/result4t",
-  "version": "0.5.5",
+  "version": "0.5.6",
+
   "description": "",
   "type": "module",
+  "types": "./dist/types/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
   "exports": {
     ".": {
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "require": "./dist/cjs/index.js"
+      },
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
       "types": "./dist/types/index.d.ts",
-      "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
       "default": "./dist/esm/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
-    "./dist/*"
+    "./dist/*",
+    "package.json"
   ],
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
