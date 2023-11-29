@@ -11,6 +11,9 @@
       "default": "./dist/esm/*.js"
     }
   },
+  "files": [
+    "./dist/*"
+  ],
   "devDependencies": {
     "@tsconfig/node20": "^20.1.2",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
