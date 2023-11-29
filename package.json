@@ -1,6 +1,6 @@
 {
   "name": "@ollierelph/result4t",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "description": "",
   "type": "module",
   "source": "src/index.ts",
