@@ -1,7 +1,11 @@
 {
   "extends": "@tsconfig/node20",
   "compilerOptions": {
-    "module": "Node16"
+    "module": "NodeNext",
+    "target": "ESNext",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "outDir": "./dist"
   },
   "include": ["src", "test"]
 }

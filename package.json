@@ -1,27 +1,28 @@
 {
   "name": "@ollierelph/result4t",
   "version": "0.5.6",
-
   "description": "",
   "type": "module",
-  "types": "./dist/types/index.d.ts",
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
+  "source": "src/index.ts",
   "exports": {
     ".": {
       "require": {
-        "types": "./dist/types/index.d.ts",
-        "require": "./dist/cjs/index.js"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       },
       "import": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/esm/index.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       },
-      "types": "./dist/types/index.d.ts",
-      "default": "./dist/esm/index.js"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
+  "types": "dist/index.d.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "unpkg": "dist/index.umd.js",
   "files": [
     "./dist/*",
     "package.json"
@@ -33,11 +34,13 @@
     "prettier": "^3.1.0",
     "typescript": "^5.3.2",
     "vite": "^4.5.0",
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.6",
+    "microbundle": "^0.15.1"
   },
   "scripts": {
     "test": "pnpm vitest",
-    "build": "rm -rf ./dist || true && pnpm tsc -b ./tsconfig.build-cjs.json ./tsconfig.build-esm.json ./tsconfig.build-types.json",
+    "build": "rm -rf ./dist || true && microbundle --format modern,cjs,umd && sh ./bin/generate-cts.sh && sh ./bin/flatten-dist.sh",
+    "dev": "microbundle watch",
     "format": "prettier --write ./",
     "publish-package": "echo \"$(jq --arg name \"${NAME_TO_PUBLISH:-@ollierelph/result4t}\" '.name|=$name' package.json)\" > package.json && pnpm publish --access public --no-git-checks"
   },

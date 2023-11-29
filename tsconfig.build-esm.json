@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist/esm",
-    "module": "Node16"
-  },
-  "include": ["src"]
-}
