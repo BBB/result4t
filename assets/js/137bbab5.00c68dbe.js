@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkresult_4_t=self.webpackChunkresult_4_t||[]).push([[768],{4372:t=>{t.exports=JSON.parse('{"label":"Getting started","permalink":"/result4t/docs/tags/getting-started","allTagsPath":"/result4t/docs/tags","count":1,"items":[{"id":"intro","title":"Quick setup guide","description":"Hello","permalink":"/result4t/docs/intro"}]}')}}]);
